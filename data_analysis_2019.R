@@ -98,7 +98,7 @@ plot_reg.lines <- function(model_final) {
                                                34
                                                56"
   plot_reg.lines <- wrap_plots(plots_reg.lines, design = design)
-  file_name <- paste0("regline_", expl.vars$orig.name[1], ".png")
+  file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], ".png")
   if (length(plots_reg.lines) == 1 | length(plots_reg.lines) == 2)
     ggsave(filename = file_name, plot = plot_reg.lines, width = 14.8, height = 7.4, units = "cm")
   if (length(plots_reg.lines) == 3 | length(plots_reg.lines) == 4)
@@ -132,7 +132,7 @@ pplot_reg.lines.single.plots <- function(model_final) {
             plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
             legend.position = "none")
     #### ploting
-    file_name <- paste0("regline_", expl.vars$orig.name[1], "_", expl.vars$orig.name[i], ".png")
+    file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_", expl.vars$orig.name[i], ".png")
     ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
   }
 }
@@ -275,7 +275,7 @@ result.tab
 #___________________________________________________________________________________________________
 #### > Writing Results to Excel Sheet ####
 
-write.xlsx(result.tab, "results.diff.2019.xlsx")
+write.xlsx(result.tab, "Result Tables/results.diff.2019.xlsx")
 
 
 
@@ -306,7 +306,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
           panel.border = element_rect(colour = "black", fill = NA),
           axis.title.y = element_text(),
           plot.margin = unit(c(0, 0.0, 0.2, 0), "cm")) 
-  file_name <- paste0("boxplot_", temp.x, "_2019.png")
+  file_name <- paste0("Plots/boxplot_", temp.x, "_2019.png")
   ggsave(filename = file_name, plot = p, width = 7.4, height = 7.4, units = "cm")
 }
 
@@ -342,7 +342,7 @@ model_final <- lm5
 pplot_reg.lines.single.plots(model_final)
 #
 #
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 #
 
 
@@ -368,7 +368,7 @@ anova(lm4, lm5)
 summary(lm5)
 model_final <- lm5
 #
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 #
 #
 
@@ -391,7 +391,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 
 # plot 
 expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
@@ -438,7 +438,7 @@ plots_reg.lines.single <- ggplot(data = ind_data, aes_string(y = "prop.flower", 
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_PAR_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_PAR_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 #
 #
@@ -514,7 +514,7 @@ plots_reg.lines.single <- ggplot(data = ind_data.kiefer, aes_string(y = "prop.fl
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_Ki.SL_cover_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_Ki.SL_cover_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 
 
@@ -557,7 +557,7 @@ plots_reg.lines.single <- ggplot(data = ind_data.kiefer, aes_string(y = "PAR", x
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_Ki.SL_cover_PAR_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_Ki.SL_cover_PAR_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 
 
@@ -583,7 +583,7 @@ anova(lm4, lm5)
 summary(lm5)
 #
 model_final <- lm5
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 #plot(model_final) stem.height = Sprosshöhe [cm]
 # plot 
 expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
@@ -629,7 +629,7 @@ plots_reg.lines.single <- ggplot(data = ind_data, aes_string(y = "stem.height", 
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_soil_water1_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_soil_water1_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 
 
@@ -651,7 +651,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 #plot(model_final)
 #plot(model_final) SLA = SLA
 # plot 
@@ -698,7 +698,7 @@ plots_reg.lines.single <- ggplot(data = ind_data, aes_string(y = "SLA", x = "PAR
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_PAR_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_PAR_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 
 
@@ -720,7 +720,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
 #plot(model_final)
 #
 #plot(model_final) LDMC = LDMC
@@ -768,7 +768,7 @@ plots_reg.lines.single <- ggplot(data = ind_data, aes_string(y = "LDMC", x = "PA
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 #### ploting
-file_name <- paste0("regline_", expl.vars$orig.name[1], "_PAR_2019.png")
+file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_PAR_2019.png")
 ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
 #
 
