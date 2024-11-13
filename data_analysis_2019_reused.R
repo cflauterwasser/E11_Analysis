@@ -112,61 +112,7 @@ write_model_table <- function(model.result = NULL, file.name = NULL) {
 #Writes the table to a new sheet in the Excel workbook and saves the workbook."
 
 
-#edit 2024: for multivariate LMs, AI-suggested. Have to specify "sheet.name" to work
-write_model_table_mv <- function(model.result = NULL, file.name = NULL, sheet.name = NULL) {
-  
-  if (file.name %in% list.files()) {
-    wb.model.tables <- loadWorkbook(xlsxFile = file.name)
-  } else {
-    wb.model.tables <- createWorkbook() 
-  }
-  
-  # Check if the model is multivariate
-  if (inherits(model.result, "mlm") && !is.null(model.result$coefficients)) {
-    # Get the summary of the model
-    model_summary <- summary(model.result)
-    
-    # Create a list to hold coefficient tables for each response variable
-    coef_tables <- list()
-    
-    # Loop through each response variable to extract coefficients and p-values
-    for (i in 1:length(model_summary)) {
-      response_name <- names(model_summary)[i]
-      coef_table <- as.data.frame(model_summary[[i]]$coefficients)
-      colnames(coef_table) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
-      coef_table <- round(coef_table, 3)
-      coef_table$Response <- response_name  # Add response variable name
-      coef_tables[[i]] <- coef_table
-    }
-    
-    # Combine the coefficient tables into one data frame
-    combined_coef_table <- do.call(rbind, coef_tables)
-    
-  } else {
-    stop("The model does not have coefficients or is not a valid multivariate linear model.")
-  }
-  
-  style_border <- createStyle(border = "TopBottomLeftRight ", borderStyle = "thin", borderColour = "black")
-  style_header <- createStyle(border = "TopBottomLeftRight", fgFill = "lightgrey")
-  
-  # Use the provided sheet name or default to "Model_Results" if not specified
-  if (is.null(sheet.name)) {
-    sheet.name <- "Model_Results"
-  }
-  
-  if (length(names(wb.model.tables)) != 0) {
-    if (sheet.name %in% names(wb.model.tables))
-      removeWorksheet(wb.model.tables, sheet.name)
-  }
-  
-  addWorksheet(wb.model.tables, sheetName = sheet.name)
-  
-  writeData(wb.model.tables, sheet = sheet.name, headerStyle = style_header, rowNames = TRUE, x = combined_coef_table)
-  addStyle(wb.model.tables, sheet = sheet.name, style = style_border, rows = 1:(dim(combined_coef_table)[1] + 1), cols = 1:(dim(combined_coef_table)[2] + 1), stack = TRUE, gridExpand = TRUE)
-  
-  # save table with model results
-  saveWorkbook(wb.model.tables, file = file.name, overwrite = TRUE)
-}
+
 
 
 
@@ -344,7 +290,7 @@ summary(glm3)
 model_final <- glm3
 
 
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -446,7 +392,7 @@ summary(lm4)
 model_final <- lm4
 
 
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -517,7 +463,7 @@ summary(lm2)
 
 model_final <- lm2
 
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -547,7 +493,7 @@ summary(glm3)
 
 model_final <- glm3
 
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -591,16 +537,14 @@ plot <- ggplot(ind_data, aes(x = management2, y = prop.flower,
 # Perform pairwise Wilcoxon tests
 wilcox_results <- pairwise.wilcox.test(ind_data$prop.flower, ind_data$management2, p.adjust.method = "holm")
 
-# Calculate the maximum value of prop.flower
 max_y <- max(ind_data$prop.flower)
 
-# Create a data frame for letters based on the results
-# This is a simplified example; you may need to adjust based on your actual results
 letters_df <- data.frame(
   management2 = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"),
-  y_position = rep(max_y + 0.05, 4),  # Adjust y_position based on your data
-  label = c("a", "b", "a", "b")  # Adjust labels based on significant differences
+  y_position = rep(max_y + 0.05, 4),
+  label = c("a", "b", "ab", "b")
 )
+
 
 # Create the violin plot
 plot <- ggplot(ind_data, aes(x = management2, y = prop.flower,
@@ -749,7 +693,7 @@ anova(lm12, lm13)
 summary(lm13)
 
 model_final <- lm13
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -804,7 +748,7 @@ summary(lm4)
 
 
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -855,7 +799,7 @@ summary(lm3)
 
 
 model_final <- lm3
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -907,7 +851,7 @@ summary(lm3)
 
 
 model_final <- lm3
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -982,3 +926,8 @@ plot
 
 # save file 
 ggsave(filename = "Plots/regline_HL_cover~moss_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+
+
+
+#moving the model result table, since directly saving it in the folder created problems
+file.rename("Model.result.tables_2024.xlsx", "Result Tables/Model.result.tables_2024.xlsx")

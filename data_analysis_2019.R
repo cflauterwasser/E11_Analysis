@@ -342,7 +342,7 @@ model_final <- lm5
 pplot_reg.lines.single.plots(model_final)
 #
 #
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 #
 
 
@@ -368,7 +368,7 @@ anova(lm4, lm5)
 summary(lm5)
 model_final <- lm5
 #
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 #
 #
 
@@ -391,7 +391,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 
 # plot 
 expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
@@ -583,7 +583,7 @@ anova(lm4, lm5)
 summary(lm5)
 #
 model_final <- lm5
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 #plot(model_final) stem.height = Sprosshöhe [cm]
 # plot 
 expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
@@ -651,7 +651,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 #plot(model_final)
 #plot(model_final) SLA = SLA
 # plot 
@@ -720,7 +720,7 @@ anova(lm4, lm3)
 summary(lm4)
 #
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2019.xlsx")
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2019.xlsx")
 #plot(model_final)
 #
 #plot(model_final) LDMC = LDMC
@@ -774,6 +774,6 @@ ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height 
 
 
 
-#___________________________________________________________________________________________________
-#### cor between env factors (not done) ####
 
+#moving the model result table, since directly saving it in the folder created problems
+file.rename("Model.result.tables_2019.xlsx", "Result Tables/Model.result.tables_2019.xlsx")
