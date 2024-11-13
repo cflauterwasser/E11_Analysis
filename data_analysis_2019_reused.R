@@ -263,7 +263,7 @@ result.tab
 #___________________________________________________________________________________
 #### > Writing Results to Excel Sheet ####
 
-write.xlsx(result.tab, "results.diff.2024.xlsx")
+write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
 
 
 
@@ -294,7 +294,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
           panel.border = element_rect(colour = "black", fill = NA),
           axis.title.y = element_text(),
           plot.margin = unit(c(0, 0.0, 0.2, 0), "cm")) 
-  file_name <- paste0("boxplot_", temp.x, "_2024.png")
+  file_name <- paste0("Plots/boxplot_", temp.x, "_2024.png")
   ggsave(filename = file_name, plot = p, width = 7.4, height = 7.4, units = "cm")
 }
 
@@ -344,7 +344,7 @@ summary(glm3)
 model_final <- glm3
 
 
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -374,7 +374,7 @@ plot <- ggplot(ind_data, aes(x = exposition, y = nb.stem)) +
 plot
 
 # save file
-ggsave(filename = "regline_nb.stem~exposition_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_nb.stem~exposition_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -396,7 +396,7 @@ plot <- ggplot(ind_data, aes(x = HL_cover, y = nb.stem)) +
 plot
 
 # save file
-ggsave(filename = "regline_nb.stem~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_nb.stem~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -418,7 +418,7 @@ plot <- ggplot(ind_data, aes(x = TL_cover, y = nb.stem)) +
 plot
 
 # save file
-ggsave(filename = "regline_nb.stem~TL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_nb.stem~TL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -446,7 +446,7 @@ summary(lm4)
 model_final <- lm4
 
 
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -476,7 +476,7 @@ plot <- ggplot(ind_data, aes(x = soil_depth, y = log(area.bunch))) +
 plot
 
 # save file
-ggsave(filename = "regline_log(area.bunch)~soil_depth_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_log(area.bunch)~soil_depth_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -498,7 +498,7 @@ plot <- ggplot(ind_data, aes(x = HL_cover, y = log(area.bunch))) +
 plot
 
 # save file
-ggsave(filename = "regline_log(area.bunch)~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_log(area.bunch)~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -517,7 +517,7 @@ summary(lm2)
 
 model_final <- lm2
 
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -547,7 +547,7 @@ summary(glm3)
 
 model_final <- glm3
 
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -638,7 +638,7 @@ print(plot)
 plot
 
 # save file
-ggsave(filename = "violin_prop.flower~management_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/violin_prop.flower~management_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -660,7 +660,7 @@ plot <- ggplot(ind_data, aes(x = soil_water, y = prop.flower)) +
 plot
 
 # save file
-ggsave(filename = "regline_prop.flower~soil_water_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_prop.flower~soil_water_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -682,104 +682,7 @@ plot <- ggplot(ind_data, aes(x = HL_cover, y = prop.flower)) +
 plot
 
 # save file
-ggsave(filename = "regline_prop.flower~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### Model - Proportion Flowering -> Pine Plots ####
-
-# prop.flower = Anteil blühender Sprosse [%]
-# hier jetzt nur für die beiden Kiefernflächen!
-
-ind_data.kiefer <- subset(ind_data, management2 == "2013" | management2 == "2018")
-
-lm1 <- lm(car::logit(prop.flower, adjust = 0.0001) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90,
-          data = ind_data.kiefer)
-
-
-
-#plot(lm1)
-summary(lm1)
-
-lm2 <- stepAIC(lm1)
-summary(lm2)
-
-lm3 <- update(lm2, .~. -vh.max)
-anova(lm2, lm3)
-summary(lm3)
-
-lm4 <- update(lm3, .~. -soil_depth)
-anova(lm3, lm4)
-summary(lm4)
-
-
-model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
-
-
-#check preconditions
-par(mfrow = c(2, 2))
-plot(model_final)
-par(mfrow = c(1, 1))
-
-check_model(model_final) # not ideal
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ SL_cover -> Pine Plots ####
-
-plot <- ggplot(ind_data.kiefer, aes(x = SL_cover, y = prop.flower)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung Strauchschicht [%]",
-       y = "Anteil blühender Sprosse [%]") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "regline_prop.flower~SL_cover_pineplots_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### Correlation Test - PAR ~ SL_cover ####
-
-cor.test(ind_data.kiefer$PAR, ind_data.kiefer$SL_cover)
-# edit 2024: significantly negatively correlated!
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - PAR ~ SL_cover ####
-
-# plot SL_cover
-lm.SL_cover_PAR <- lm(PAR ~ SL_cover, data = ind_data.kiefer)
-summary(lm.SL_cover_PAR)
-
-plot <- ggplot(ind_data.kiefer, aes(x = SL_cover, y = PAR)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung Strauchschicht [%]",
-       y = "Photosynthetisch aktive Strahlung [%]") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "regline_PAR~SL_cover_pineplots_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_prop.flower~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -846,7 +749,7 @@ anova(lm12, lm13)
 summary(lm13)
 
 model_final <- lm13
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -876,7 +779,7 @@ plot <- ggplot(ind_data, aes(x = soil_cover, y = stem.height)) +
 plot
 
 # save file
-ggsave(filename = "regline_stem.height~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_stem.height~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -901,7 +804,7 @@ summary(lm4)
 
 
 model_final <- lm4
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -931,7 +834,7 @@ plot <- ggplot(ind_data, aes(x = vh.90, y = stem.per.sqm)) +
 plot
 
 # save file
-ggsave(filename = "regline_stem.per.sqm~vh.90_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_stem.per.sqm~vh.90_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 
@@ -952,7 +855,7 @@ summary(lm3)
 
 
 model_final <- lm3
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
 
 
 #check preconditions
@@ -982,4 +885,4 @@ plot <- ggplot(ind_data, aes(x = soil_cover, y = leaf.area)) +
 plot
 
 # save file 
-ggsave(filename = "regline_leaf.area~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+ggsave(filename = "Plots/regline_leaf.area~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
