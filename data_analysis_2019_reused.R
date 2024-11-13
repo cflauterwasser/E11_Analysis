@@ -886,3 +886,99 @@ plot
 
 # save file 
 ggsave(filename = "Plots/regline_leaf.area~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+
+
+
+
+#___________________________________________________________________________________
+#### Model - Herb Layer Cover (HL_cover)  ####
+
+# herb layer correlated with lot of Cypripedium fitness traits, here deeper investigation of correlation of HL with other env variables
+
+lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data)
+summary(lm1)
+
+lm2 <- stepAIC(lm1)
+summary(lm2)
+
+lm3 <- update(lm2, .~. -vh.max)
+anova(lm2, lm3)
+summary(lm3)
+
+
+model_final <- lm3
+write_model_table(model.result = model_final, file.name = "Result Tables/Model.result.tables_2024.xlsx")
+
+
+#check preconditions
+par(mfrow = c(2, 2))
+plot(model_final) # qqline not good
+par(mfrow = c(1, 1))
+
+check_model(model_final)
+
+
+
+#___________________________________________________________________________________
+#### > Plotting - HL_cover ~ SL_cover ####
+
+plot <- ggplot(ind_data, aes(x = SL_cover, y = HL_cover)) +
+  geom_point(colour = "black",
+             alpha = 0.25,
+             shape = 16,
+             size = 0.6) +
+  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  labs(x = "Deckung Strauchschicht [%]",
+       y = "Deckung Krautschicht [%]") +
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        legend.position = "none")
+
+plot
+
+# save file 
+ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm") 
+
+
+
+#___________________________________________________________________________________
+#### > Plotting - HL_cover ~ soil_cover ####
+
+plot <- ggplot(ind_data, aes(x = soil_cover, y = HL_cover)) +
+  geom_point(colour = "black",
+             alpha = 0.25,
+             shape = 16,
+             size = 0.6) +
+  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  labs(x = "Deckung offener Boden [%]",
+       y = "Deckung Krautschicht [%]") +
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        legend.position = "none")
+
+plot
+
+# save file 
+ggsave(filename = "Plots/regline_HL_cover~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+
+
+
+#___________________________________________________________________________________
+#### > Plotting - HL_cover ~ moss_cover ####
+
+plot <- ggplot(ind_data, aes(x = moss_cover, y = HL_cover)) +
+  geom_point(colour = "black",
+             alpha = 0.25,
+             shape = 16,
+             size = 0.6) +
+  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  labs(x = "Deckung Moosschicht [%]",
+       y = "Deckung Krautschicht [%]") +
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        legend.position = "none")
+
+plot
+
+# save file 
+ggsave(filename = "Plots/regline_HL_cover~moss_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
