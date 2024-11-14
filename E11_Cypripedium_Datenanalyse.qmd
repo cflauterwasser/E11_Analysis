@@ -1,7 +1,24 @@
+---
+title: "E11 Cypripedium - Analyse signifikanter Umweltparameter"
+author: "Nele Herzig und Caspar Lauterwasser"
+format: html
+toc: true
+toc-location: left
+toc-title: INHALTSVERZEICHNIS
+editor: visual
+---
 
-#___________________________________________________________________________________
-#### Loading Packages ####
+<br>
 
+# **1. Vorbereitende Schritte**
+
+<br>
+
+## Genutze R-*Packages*
+
+```{r}
+#| warning: false
+#| output: false
 library(openxlsx)
 library(MASS)
 library(plotrix)
@@ -10,17 +27,17 @@ library(patchwork)
 library(tidyverse)
 library(magrittr)
 library(performance)
+```
 
+<br>
 
+## Selbsterstellte Funktionen
 
-#___________________________________________________________________________________
-#### Creating Own Functions ####
+Nutzung mit freundlicher Genehmigung von [Markus Bernhardt-Römermann](https://www.ecology.uni-jena.de/66/markus-bernhardt-roemermann).
 
-# own function
+```{r}
 invlogit <- function(x) return(round(exp(x) / (1 + exp(x)), 3))
-# x <- TukeyHSD.letters
-#x$groups[1] <- "b"
-#AI: "This function computes the inverse logit transformation, which is often used in logistic regression to convert log-odds to probabilities"
+
 
 rename.letters <- function(x) {
   x$groups <- as.character(x$groups)
@@ -59,13 +76,8 @@ rename.letters <- function(x) {
   x$groups <- new.letters
   return(x)
 }
-# rename.letters(TukeyHSD.letters)
-#AI: "This function renames groups of letters (likely from statistical test results) to ensure they are in a specific order. It checks if the first group contains "a" and renames accordingly, creating a mapping of original to new letters"
 
 
-
-#model_final1 <- model_final
-#
 write_model_table <- function(model.result = NULL, file.name = NULL) {
   
   if (file.name %in% list.files()) {
@@ -105,20 +117,13 @@ write_model_table <- function(model.result = NULL, file.name = NULL) {
   # save table with model results
   saveWorkbook(wb.model.tables, file = file.name, overwrite = TRUE)
 }
-#AI: "This function writes the coefficients of a statistical model to an Excel file. It:
-#Checks if the specified file exists and loads it or creates a new workbook.
-#Extracts the dependent variable name from the model summary.
-#Creates a coefficient table and formats it.
-#Writes the table to a new sheet in the Excel workbook and saves the workbook."
+```
 
+<br>
 
+## Einlesen der Daten von 2019 und 2024
 
-
-
-
-#___________________________________________________________________________________
-#### Importing Data ####
-
+```{r}
 # 2024
 ind_data_2024 <- read.xlsx("datalike2019.xlsx", sheet = 1)
 str(ind_data_2024)
@@ -126,13 +131,13 @@ str(ind_data_2024)
 # 2019
 ind_data_2019 <- read.xlsx("individuals_data.xlsx", sheet = 1)
 str(ind_data_2019)
+```
 
+<br>
 
+## Vorbereitung der Daten
 
-#___________________________________________________________________________________
-#### Data Preparation ####
-
-
+```{r}
 ind_data_2024 <- ind_data_2024 |> 
   mutate(leaf.area = l.leaves*w.leaves)
 
@@ -154,36 +159,38 @@ ind_data_2019 <- ind_data_2019 %>%
 # area.bunch from cm² to m²
 ind_data_2024$area.bunch <- ind_data_2024$area.bunch / 10000
 ind_data_2019$area.bunch <- ind_data_2019$area.bunch / 10000
+```
 
-  
+<br>
 
+<br>
 
-#___________________________________________________________________________________
-#### _________________________ ####
-#### RESULT TABLE, BOXPLOTS ####
+# **2. Ergebnistabelle(n) und Boxplots**
 
+<br>
 
+## Ergebnistabelle Flächenvergleich
 
+<br>
 
-#___________________________________________________________________________________
-#### Calculating Means and Standard Errors ####
+Berechnung der Mittelwerte und Standardfehler.
 
+```{r}
 means <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], mean)
 se <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], std.error)
+```
 
+Erstellung der Ergebnistabelle
 
-
-#___________________________________________________________________________________
-#### Creating Results Table ####
-
+```{r}
 result.tab <- data.frame(matrix(NA, nrow = 21, ncol = 13))
 rownames(result.tab) <- colnames(ind_data_2024[, c(6:13, 15:27)])
 colnames(result.tab) <- c("parameter", levels(ind_data_2024$management2), "F.val", "df", "P.val", "Signif", paste0(levels(ind_data_2024$management2), ".letter"))
+```
 
+ANOVA und Tukey's HSD Test
 
-#___________________________________________________________________________________
-#### ANOVA and Tukey's HSD Test ####
-
+```{r}
 for (i in 1:dim(result.tab)[1]) { # i = 13
   temp <- rownames(result.tab)[i]
   mean.se <- paste0(format(round(means[, temp], 2), nsmall = 2), "±", format(round(se[, temp], 3), nsmall = 3))
@@ -207,27 +214,27 @@ for (i in 1:dim(result.tab)[1]) { # i = 13
   res_temp <- c(temp, mean.se, fval, degfr, pval, symp, TukeyHSD.letters)
   result.tab[i, ] <- res_temp
 }
+```
 
+Benennung der Umweltvariablen
 
-
-#___________________________________________________________________________________
-#### > Naming Environmental Variables ####
-
+```{r}
 result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "Photosynthetisch aktive Strahlung [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
+```
+
+Exportierung der Ergebnistabelle
+
+```{r}
 result.tab
 
-
-
-#___________________________________________________________________________________
-#### > Writing Results to Excel Sheet ####
-
 write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
+```
 
+<br>
 
+## Boxplots zu Flächenvergleich von Umweltparametern
 
-#___________________________________________________________________________________
-#### > Boxplots Env Vars ~ Management ####
-
+```{r}
 for (i in 1:dim(result.tab)[1]) { # i = 11
   temp.x <- rownames(result.tab)[i]
   temp.y <- "management2"
@@ -254,39 +261,24 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
   file_name <- paste0("Plots/boxplot_", temp.x, "_2024.png")
   ggsave(filename = file_name, plot = p, width = 7.4, height = 7.4, units = "cm")
 }
+```
 
+<br>
 
+<br>
 
+# **3. Ökologische Modellierung 2024**
 
-#___________________________________________________________________________________
-#### ___________ ####
-#### MODELLING ####
+<br>
 
+## Modell zu Sprossanzahl pro Horst (nb.stem)
 
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
+```{r}
+#| warning: false
+#| output: false
 
-#___________________________________________________________________________________
-#### Available Dependent Variables ####
-
-result.tab
-
-#nb.stem       #done
-#stem.per.sqm  #done
-#area.bunch    #done
-#nb.flower     #contained in prop.flower
-#prop.flower   #done
-#stem.height   #done
-#leaf.area     #done
-
-
-#___________________________________________________________________________________
-#### Model - Stem Count Per Patch (nb.stem) ####
-
-# nb.stem = Sprossanzahl pro Horst
-lm1 <- glm(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = poisson)
-summary(lm1)
-
-# besser glm.nb (edit 2024: hier auch!)
 glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 summary(glm1)
 
@@ -302,20 +294,23 @@ model_final <- glm3
 
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
 plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Sprosszahl \~ Exposition**
 
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ exposition ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = exposition, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -330,14 +325,13 @@ plot <- ggplot(ind_data_2024, aes(x = exposition, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~exposition_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Sprosszahl \~ Deckung Krautschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ HL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -352,14 +346,13 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Sprosszahl \~ Deckung Baumschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ TL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = TL_cover, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -374,15 +367,19 @@ plot <- ggplot(ind_data_2024, aes(x = TL_cover, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~TL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Horstgröße (area.bunch)
 
-#___________________________________________________________________________________
-#### Model - Patch Size  (area.bunch) ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# area.bunch = Horstgröße [m²]
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(log(area.bunch) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 #plot(lm2)
@@ -405,19 +402,23 @@ model_final <- lm4
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
+```
 
-#check preconditions
+Testen der Modell-Voraussetzungen.
+
+```{r}
 par(mfrow = c(2, 2))
 plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Horstgröße \~ Bodentiefe**
 
-#___________________________________________________________________________________
-#### > Plotting - log(area.bunch) ~ soil_depth ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -432,14 +433,13 @@ plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_log(area.bunch)~soil_depth_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Horstgröße \~ Deckung Krautschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - log(area.bunch) ~ HL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -454,42 +454,20 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_log(area.bunch)~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Blüherfolg (cbind(nb.flower, nb.stem))
 
-#___________________________________________________________________________________
-#### Model - Proportion Flowering (prop.flower) ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# prop.flower = Anteil blühender Sprosse [%]
-ind_data_2024$prop.flower <- ind_data_2024$prop.flower / 100
-lm1 <- lm(car::logit(prop.flower, adjust = 0.0001) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+```{r}
+#| warning: false
+#| output: false
 
-#plot(lm1)
-summary(lm1)
-
-lm2 <- stepAIC(lm1)
-summary(lm2)
-
-model_final <- lm2
-
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
-
-
-#check preconditions
-par(mfrow = c(2, 2))
-plot(model_final) # difficult
-par(mfrow = c(1, 1))
-
-check_model(model_final) # difficult
-
-
-
-#___________________________________________________________________________________
-#### Model - Proportion Flowering - Markus' Alternative (cbind(nb.flower, nb.stem)) ####
-
-# edit 2024: Alternative von Markus
 glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = binomial)
 
 summary(glm1)
@@ -505,49 +483,23 @@ summary(glm3)
 model_final <- glm3
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # difficult
+plot(model_final)
 par(mfrow = c(1, 1))
 
-check_model(model_final) # difficult
+check_model(model_final)
+```
 
+### Visualisierungen
 
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ management2 ####
+**Blüherfolg \~ Management**
 
-plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
-                             fill = management2,
-                             col = management2)) +
-  geom_violin(scale ="width",
-              alpha =0.1) + 
-  geom_jitter(aes(group = management2),
-              width = 0.3,
-              height = 0,
-              alpha = 0.3) + 
-  stat_summary(fun="median",
-               geom="crossbar",
-               mapping = aes(ymin=after_stat(y), ymax=after_stat(y)),
-               width=1,
-               position = position_dodge(),
-               show.legend = FALSE) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Management / Standort",
-       y = "Anteil blühender Sprosse") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none") +
-  scale_fill_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
-  scale_color_manual(values = c("firebrick", "gold", "darkblue", "forestgreen"))
-    
-
-
-
-# Perform pairwise Wilcoxon tests
-wilcox_results <- pairwise.wilcox.test(ind_data_2024$prop.flower, ind_data_2024$management2, p.adjust.method = "holm")
-
+```{r}
 max_y <- max(ind_data_2024$prop.flower)
 
 letters_df <- data.frame(
@@ -557,7 +509,6 @@ letters_df <- data.frame(
 )
 
 
-# Create the violin plot
 plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
                              fill = management2,
                              col = management2)) +
@@ -573,29 +524,27 @@ plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
                width=1,
                position = position_dodge(),
                show.legend = FALSE) +
-  scale_y_continuous(labels = scales::percent_format()) +
   labs(x = "Management / Standort",
-       y = "Anteil blühender Sprosse") +
+       y = "Anteil blühender Sprosse [%]") +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         legend.position = "none") +
   scale_fill_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
   scale_color_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
   geom_text(data = letters_df, aes(x = management2, y = y_position, label = label), 
-            position = position_dodge(0.9), size = 5, color = "black")  # Set color to black
+            position = position_dodge(0.9), size = 5, color = "black")
 
 
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/violin_prop.flower~management_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Blüherfolg \~ Bodenfeuchte**
 
-
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ soil_water ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = soil_water, y = prop.flower)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -610,14 +559,13 @@ plot <- ggplot(ind_data_2024, aes(x = soil_water, y = prop.flower)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_prop.flower~soil_water_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Blüherfolg \~ Deckung Krautschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ HL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = prop.flower)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -632,15 +580,19 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = prop.flower)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Sprosshöhe (stem.height)
 
-#___________________________________________________________________________________
-#### Model - Stem Height (stem.height)  ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# stem.height = Sprosshöhe [cm]
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(log(stem.height) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 
@@ -701,21 +653,29 @@ summary(lm13)
 
 model_final <- lm13
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+**Modell weist keine signifikante Korrelation mit Umweltvariablen auf!**
 
-#check preconditions
+Testen der Modell-Voraussetzungen.
+
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # strong patterns
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+<br>
 
+## Modell zu Sprossanzahl pro m² Horstgröße (stem.per.sqm)
 
-#___________________________________________________________________________________
-#### Model - Stem Density (stem.per.sqm)  ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# new 2024
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 summary(lm1)
@@ -734,20 +694,23 @@ summary(lm4)
 
 model_final <- lm4
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # difficult
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Sprossanzahl pro m² Horstgröße \~ Höhe 90% der Vegetation**
 
-#___________________________________________________________________________________
-#### > Plotting - stem.per.sqm ~ vh.90 ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -762,15 +725,19 @@ plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_stem.per.sqm~vh.90_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Blattfläche (leaf.area)
 
-#___________________________________________________________________________________
-#### Model - Leaf Area (leaf.area)  ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# new 2024
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(leaf.area ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 summary(lm1)
@@ -786,19 +753,23 @@ summary(lm3)
 model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
+```
 
-#check preconditions
+Testen der Modell-Voraussetzungen.
+
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # patterns
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Blattfläche \~ Deckung offener Boden**
 
-#___________________________________________________________________________________
-#### > Plotting - leaf.area ~ soil_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = leaf.area)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -813,16 +784,19 @@ plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = leaf.area)) +
 
 plot
 
-# save file 
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_leaf.area~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Deckung Krautschicht (HL_cover)
 
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-#___________________________________________________________________________________
-#### Model - Herb Layer Cover (HL_cover)  ####
-
-# herb layer correlated with lot of Cypripedium fitness traits, here deeper investigation of correlation of HL with other env variables
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
 summary(lm1)
@@ -837,20 +811,23 @@ summary(lm3)
 
 model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # qqline not good
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Deckung Krautschicht \~ Deckung Strauchschicht**
 
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ SL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -865,14 +842,13 @@ plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
 
 plot
 
-# save file 
-ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm") 
+# Speichern der Bilddatei
+ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Deckung Krautschicht \~ Deckung offener Boden**
 
-
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ soil_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -887,14 +863,13 @@ plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
 
 plot
 
-# save file 
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_HL_cover~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Deckung Krautschicht \~ Deckung Moosschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ moss_cover ####
-
+```{r}
 plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -909,26 +884,31 @@ plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
 
 plot
 
-# save file 
+# Speichern der Bilddatei 
 ggsave(filename = "Plots/regline_HL_cover~moss_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Verschieben der Modell-Ergebnistabelle
 
-#moving the model result table, since directly saving it in the folder created problems
+Direktes Abspeichern nach jedem Modell im Ordner führte zu Problemen. Daher nachträgliches Verschieben in den vorgesehenen Ordner.
+
+```{r}
 file.rename("Model.result.tables_2024.xlsx", "Result Tables/Model.result.tables_2024.xlsx")
+```
 
+<br>
 
+<br>
 
+# **4. Ökologische Modellierung 2019 + 2024**
 
-#___________________________________________________________________________________
-#### __________________________ ####
-#### MODELLING MERGED YEARS ####
+<br>
 
+## Zusammenführen von Daten
 
-#___________________________________________________________________________________
-#### Merging 2019 + 2024 ####
-
-
+```{r}
 ind_data_2024$year <- 2024
 ind_data_2019$year <- 2019
 
@@ -941,16 +921,18 @@ names(ind_data_2024_common) <- common_columns
 names(ind_data_2019_common) <- common_columns
 
 ind_data_merged <- rbind(ind_data_2024_common, ind_data_2019_common)
+```
 
-ind_data_merged
+<br>
 
+## Modell zu Sprosszahl pro Horst (nb.stem)
 
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
+```{r}
+#| warning: false
+#| output: false
 
-#___________________________________________________________________________________
-#### Model - Stem Count Per Patch (nb.stem) ####
-
-# besser glm.nb
 glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
 summary(glm1)
 
@@ -963,20 +945,23 @@ model_final <- glm2
 
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
 plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Sprosszahl pro Horst \~ Bodentiefe**
 
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ soil_depth ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -991,14 +976,13 @@ plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~soil_depth_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Sprosszahl pro Horst \~ Photosynthetisch aktive Strahlung**
 
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ PAR ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = PAR, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1013,14 +997,13 @@ plot <- ggplot(ind_data_merged, aes(x = PAR, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~PAR_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Sprosszahl pro Horst \~ Deckung Krautschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ HL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1035,14 +1018,13 @@ plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~HL_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Sprosszahl pro Horst \~ Deckung offener Boden**
 
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ soil_cover ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = nb.stem)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1057,15 +1039,20 @@ plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = nb.stem)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_nb.stem~soil_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Blüherfolg (cbind(nb.flower, nb.stem))
 
-#___________________________________________________________________________________
-#### Model - Proportion Flowering ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# edit 2024: Alternative von Markus
+```{r}
+#| warning: false
+#| output: false
+
 glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged, family = binomial)
 
 summary(glm1)
@@ -1084,20 +1071,23 @@ summary(glm4)
 model_final <- glm4
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # qqline critical
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Blüherfolg \~ Bodentiefe**
 
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ soil_depth ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = prop.flower)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1112,14 +1102,13 @@ plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = prop.flower)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Blüherfolg \~ Deckung Krautschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ HL_cover ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = prop.flower)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1134,15 +1123,19 @@ plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = prop.flower)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Modell zu Sprossanzahl pro m² Horstgröße (stem.per.sqm)
 
-#___________________________________________________________________________________
-#### Model - Stem Density (stem.per.sqm)  ####
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
 
-# new 2024
+```{r}
+#| warning: false
+#| output: false
 
 lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
 summary(lm1)
@@ -1157,20 +1150,23 @@ summary(lm3)
 
 model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```
 
+Testen der Modell-Voraussetzungen.
 
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
-plot(model_final) # qqline critical, residuals triangle?
+plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Sprossanzahl pro m² Horstgröße \~ Bodenfeuchte**
 
-#___________________________________________________________________________________
-#### > Plotting - stem.per.sqm ~ soil_water ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1185,39 +1181,38 @@ plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
 
 plot
 
-# save file
+# Speichern der Bilddatei
 ggsave(filename = "Plots/regline_stem.per.sqm~soil_water_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
+
+<br>
+
+## Modell zu Deckung Krautschicht (HL_cover)
+
+Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.
+
+```{r}
+#| warning: false
+#| output: false
 
 
+```
 
-#___________________________________________________________________________________
-#### Model - Herb Layer Cover (HL_cover)  ####
+Testen der Modell-Voraussetzungen.
 
-# herb layer correlated with lot of Cypripedium fitness traits, here deeper investigation of correlation of HL with other env variables
-
-lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
-summary(lm1)
-
-lm2 <- stepAIC(lm1)
-summary(lm2)
-
-
-model_final <- lm2
-write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
-
-
-#check preconditions
+```{r}
 par(mfrow = c(2, 2))
 plot(model_final)
 par(mfrow = c(1, 1))
 
 check_model(model_final)
+```
 
+### Visualisierungen
 
+**Deckung Krautschicht \~ Deckung Strauchschicht**
 
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ slope ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1232,14 +1227,13 @@ plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
 
 plot
 
-# save file 
-ggsave(filename = "Plots/regline_HL_cover~slope_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm") 
+# Speichern der Bilddatei 
+ggsave(filename = "Plots/regline_HL_cover~slope_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Deckung Krautschicht \~ Photosynthetisch aktive Strahlung**
 
-
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ PAR ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1254,14 +1248,13 @@ plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
 
 plot
 
-# save file 
-ggsave(filename = "Plots/regline_HL_cover~PAR_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm") 
+# Speichern der Bilddatei 
+ggsave(filename = "Plots/regline_HL_cover~PAR_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Deckung Krautschicht \~ Deckung offener Boden**
 
-
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ soil_cover ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1276,14 +1269,13 @@ plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
 
 plot
 
-# save file 
+# Speichern der Bilddatei 
 ggsave(filename = "Plots/regline_HL_cover~soil_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+**Deckung Krautschicht \~ Deckung Moosschicht**
 
-
-#___________________________________________________________________________________
-#### > Plotting - HL_cover ~ moss_cover ####
-
+```{r}
 plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
@@ -1298,10 +1290,16 @@ plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
 
 plot
 
-# save file 
+# Speichern der Bilddatei 
 ggsave(filename = "Plots/regline_HL_cover~moss_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```
 
+<br>
 
+## Verschieben der Modell-Ergebnistabelle
 
-#moving the model result table, since directly saving it in the folder created problems
+Direktes Abspeichern nach jedem Modell im Ordner führte zu Problemen. Daher nachträgliches Verschieben in den vorgesehenen Ordner.
+
+```{r}
 file.rename("Model.result.tables_merged.xlsx", "Result Tables/Model.result.tables_merged.xlsx")
+```
