@@ -291,7 +291,7 @@ summary(glm3)
 
 
 model_final <- glm3
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
@@ -398,7 +398,7 @@ summary(lm4)
 
 
 model_final <- lm4
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
@@ -481,7 +481,7 @@ summary(glm3)
 
 
 model_final <- glm3
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
@@ -653,7 +653,7 @@ anova(lm12, lm13)
 summary(lm13)
 
 model_final <- lm13
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
@@ -696,7 +696,7 @@ summary(lm4)
 
 
 model_final <- lm4
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
@@ -756,7 +756,7 @@ summary(lm3)
 
 
 model_final <- lm3
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
@@ -817,7 +817,7 @@ summary(lm3)
 
 
 model_final <- lm3
-model_final
+print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
