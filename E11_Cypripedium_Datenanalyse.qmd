@@ -291,9 +291,12 @@ summary(glm3)
 
 
 model_final <- glm3
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -398,10 +401,13 @@ summary(lm4)
 
 
 model_final <- lm4
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -481,9 +487,12 @@ summary(glm3)
 
 
 model_final <- glm3
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -653,9 +662,12 @@ anova(lm12, lm13)
 summary(lm13)
 
 model_final <- lm13
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 **Modell weist keine signifikante Korrelation mit Umweltvariablen auf!**
@@ -696,9 +708,12 @@ summary(lm4)
 
 
 model_final <- lm4
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -756,10 +771,13 @@ summary(lm3)
 
 
 model_final <- lm3
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -817,9 +835,12 @@ summary(lm3)
 
 
 model_final <- lm3
-print(model_final)
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
