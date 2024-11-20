@@ -2,6 +2,8 @@
 title: "E11 Cypripedium - Analyse signifikanter Umweltparameter"
 author: "Nele Herzig und Caspar Lauterwasser"
 format: html
+output-file: "index.html"
+output-dir: "/docs"
 toc: true
 toc-location: left
 toc-title: INHALTSVERZEICHNIS
@@ -144,13 +146,13 @@ ind_data_2024 <- ind_data_2024 |>
 
 ind_data_2024$management2 <- factor(ind_data_2024$management2,
                                     levels = c("Wald", "Hang", "Buche", "Fichte"),
-                                    labels = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"))
+                                    labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 
 
 ind_data_2019$management2 <- factor(ind_data_2019$management2,
                                levels = c("CC", "5yr", "beech_forest", "spruce_forest"),
-                               labels = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"))
+                               labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 ind_data_2019 <- ind_data_2019 %>%
   mutate(soil_water = rowMeans(select(., soil_water1, soil_water2)))
@@ -246,7 +248,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
   temp.env.name <- result.tab[i, "env.names"] 
   
   p <- ggplot(ind_data_2024, aes_string(x = temp.y, y =  temp.x)) + 
-    geom_boxplot(fill = c("firebrick", "gold", "darkblue", "forestgreen")) +
+    geom_boxplot(fill = c("forestgreen", "gold", "firebrick", "darkblue")) +
     labs(x = "
          ", y = temp.env.name) +
     ylim(range.y) +

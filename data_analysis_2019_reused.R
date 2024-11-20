@@ -139,13 +139,13 @@ ind_data_2024 <- ind_data_2024 |>
 
 ind_data_2024$management2 <- factor(ind_data_2024$management2,
                                     levels = c("Wald", "Hang", "Buche", "Fichte"),
-                                    labels = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"))
+                                    labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 
 
 ind_data_2019$management2 <- factor(ind_data_2019$management2,
                                levels = c("CC", "5yr", "beech_forest", "spruce_forest"),
-                               labels = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"))
+                               labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 ind_data_2019 <- ind_data_2019 %>%
   mutate(soil_water = rowMeans(select(., soil_water1, soil_water2)))
@@ -213,7 +213,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 13
 #___________________________________________________________________________________
 #### > Naming Environmental Variables ####
 
-result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "Photosynthetisch aktive Strahlung [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
+result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "PAR [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
 result.tab
 
 
@@ -239,7 +239,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
   temp.env.name <- result.tab[i, "env.names"] 
   
   p <- ggplot(ind_data_2024, aes_string(x = temp.y, y =  temp.x)) + 
-    geom_boxplot(fill = c("firebrick", "gold", "darkblue", "forestgreen")) +
+    geom_boxplot(fill = c("forestgreen", "gold", "firebrick", "darkblue")) +
     labs(x = "
          ", y = temp.env.name) +
     ylim(range.y) +
@@ -249,10 +249,11 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
     geom_text(x = 4, y = max.y[4, 2] + plus.temp, label = result.tab[i, 13]) +
     theme(panel.background = element_blank(),
           panel.border = element_rect(colour = "black", fill = NA),
+          axis.text.x = element_text(angle = 45, hjust=1),
           axis.title.y = element_text(),
           plot.margin = unit(c(0, 0.0, 0.2, 0), "cm")) 
   file_name <- paste0("Plots/boxplot_", temp.x, "_2024.png")
-  ggsave(filename = file_name, plot = p, width = 7.4, height = 7.4, units = "cm")
+  ggsave(filename = file_name, plot = p, width = 7.4, height = 8.5, units = "cm")
 }
 
 
@@ -518,30 +519,6 @@ check_model(model_final) # difficult
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ management2 ####
 
-plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
-                             fill = management2,
-                             col = management2)) +
-  geom_violin(scale ="width",
-              alpha =0.1) + 
-  geom_jitter(aes(group = management2),
-              width = 0.3,
-              height = 0,
-              alpha = 0.3) + 
-  stat_summary(fun="median",
-               geom="crossbar",
-               mapping = aes(ymin=after_stat(y), ymax=after_stat(y)),
-               width=1,
-               position = position_dodge(),
-               show.legend = FALSE) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Management / Standort",
-       y = "Anteil blühender Sprosse") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none") +
-  scale_fill_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
-  scale_color_manual(values = c("firebrick", "gold", "darkblue", "forestgreen"))
-    
 
 
 
@@ -551,7 +528,7 @@ wilcox_results <- pairwise.wilcox.test(ind_data_2024$prop.flower, ind_data_2024$
 max_y <- max(ind_data_2024$prop.flower)
 
 letters_df <- data.frame(
-  management2 = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"),
+  management2 = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"),
   y_position = rep(max_y + 0.05, 4),
   label = c("a", "b", "ab", "b")
 )
@@ -579,8 +556,8 @@ plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         legend.position = "none") +
-  scale_fill_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
-  scale_color_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
+  scale_fill_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +
+  scale_color_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +
   geom_text(data = letters_df, aes(x = management2, y = y_position, label = label), 
             position = position_dodge(0.9), size = 5, color = "black")  # Set color to black
 
