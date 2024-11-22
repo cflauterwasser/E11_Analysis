@@ -298,6 +298,10 @@ model_final <- glm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 Testen der Modell-Voraussetzungen.
 
 ```{r}
@@ -403,7 +407,10 @@ model_final <- lm4
 
 
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -487,6 +494,10 @@ model_final <- glm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 Testen der Modell-Voraussetzungen.
 
 ```{r}
@@ -498,51 +509,6 @@ check_model(model_final)
 ```
 
 ### Visualisierungen
-
-**Blüherfolg \~ Management**
-
-```{r}
-max_y <- max(ind_data_2024$prop.flower)
-
-letters_df <- data.frame(
-  management2 = c("nicht entbuscht", "entbuscht", "Buche", "Fichte"),
-  y_position = rep(max_y + 0.05, 4),
-  label = c("a", "b", "ab", "b")
-)
-
-
-plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
-                             fill = management2,
-                             col = management2)) +
-  geom_violin(scale ="width",
-              alpha =0.1) + 
-  geom_jitter(aes(group = management2),
-              width = 0.3,
-              height = 0,
-              alpha = 0.3) + 
-  stat_summary(fun="median",
-               geom="crossbar",
-               mapping = aes(ymin=after_stat(y), ymax=after_stat(y)),
-               width=1,
-               position = position_dodge(),
-               show.legend = FALSE) +
-  labs(x = "Management / Standort",
-       y = "Anteil blühender Sprosse [%]") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none") +
-  scale_fill_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
-  scale_color_manual(values = c("firebrick", "gold", "darkblue", "forestgreen")) +
-  geom_text(data = letters_df, aes(x = management2, y = y_position, label = label), 
-            position = position_dodge(0.9), size = 5, color = "black")
-
-
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/violin_prop.flower~management_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
 
 **Blüherfolg \~ Bodenfeuchte**
 
@@ -657,6 +623,10 @@ model_final <- lm13
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 **Modell weist keine signifikante Korrelation mit Umweltvariablen auf!**
 
 Testen der Modell-Voraussetzungen.
@@ -696,6 +666,10 @@ summary(lm4)
 
 model_final <- lm4
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -754,7 +728,10 @@ summary(lm3)
 
 model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
 
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -813,6 +790,10 @@ summary(lm3)
 
 model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
@@ -949,6 +930,10 @@ model_final <- glm2
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 Testen der Modell-Voraussetzungen.
 
 ```{r}
@@ -1075,6 +1060,10 @@ model_final <- glm4
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 Testen der Modell-Voraussetzungen.
 
 ```{r}
@@ -1154,6 +1143,10 @@ model_final <- lm3
 write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
 ```
 
+```{r}
+summary(model_final)
+```
+
 Testen der Modell-Voraussetzungen.
 
 ```{r}
@@ -1197,7 +1190,20 @@ Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse i
 #| warning: false
 #| output: false
 
+lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
+summary(lm1)
 
+lm2 <- stepAIC(lm1)
+summary(lm2)
+
+
+model_final <- lm2
+write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+
+```
+
+```{r}
+summary(model_final)
 ```
 
 Testen der Modell-Voraussetzungen.
