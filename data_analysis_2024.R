@@ -64,6 +64,30 @@ rename.letters <- function(x) {
 
 
 
+pplot_reg.lines.single.plots <- function(model_final, df.year, year) {
+  expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
+  expl.vars$new.name <- result.tab$env.names[match(expl.vars$orig.name, result.tab$parameter)]
+  
+  if (any(sapply(model_final$model, class) == "factor")) {
+    factor.vars <- colnames(model_final$model)[which(sapply(model_final$model, class) == "factor")]
+    expl.vars <- expl.vars[(expl.vars$orig.name != factor.vars), ]
+  }
+  for (i in 2:dim(expl.vars)[1]) { # i=2
+    plots_reg.lines.single <- ggplot(data = df.year, aes_string(y = expl.vars$orig.name[1], x = expl.vars$orig.name[i])) + 
+      geom_point(colour = "black", alpha = 0.25, shape = 16, size = 0.6) +
+      geom_smooth(method = MASS::glm.nb, formula = y ~ x, color = "darkgreen", se = TRUE, fill = "green", alpha = 0.35) + 
+      labs(x = expl.vars$new.name[i], y = expl.vars$new.name[1]) +
+      theme(panel.background = element_blank(),
+            panel.border = element_rect(colour = "black", fill = NA),
+            plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
+            legend.position = "none")
+    #### ploting
+    file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_", expl.vars$orig.name[i], "_", year, "_alternative", ".png")
+    ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
+  }
+}
+
+
 #model_final1 <- model_final
 #
 write_model_table <- function(model.result = NULL, file.name = NULL) {
@@ -284,8 +308,8 @@ result.tab
 #### Model - Stem Count Per Patch (nb.stem) ####
 
 # nb.stem = Sprossanzahl pro Horst
-lm1 <- glm(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = poisson)
-summary(lm1)
+#lm1 <- glm(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = poisson)
+#summary(lm1)
 
 # besser glm.nb (edit 2024: hier auch!)
 glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
@@ -315,137 +339,10 @@ check_model(model_final)
 
 
 #___________________________________________________________________________________
-#### > Plotting - nb.stem ~ exposition ####
+#### > Plotting - nb.stem ~ all sign env vars ####
 
-glm.nb.exposition <- glm.nb(nb.stem ~ exposition, data = ind_data_2024)
-range.x <- range(ind_data_2024$exposition)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(exposition = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(glm.nb.exposition,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(exposition = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_2024, aes(x = exposition, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = exposition, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = exposition, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Exposition [°]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~exposition_2024_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ HL_cover ####
-
-glm.nb.HL_cover <- glm.nb(nb.stem ~ HL_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$HL_cover)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(glm.nb.HL_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = HL_cover, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Deckung Krautschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~HL_cover_2024_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ TL_cover ####
-
-glm.nb.TL_cover <- glm.nb(nb.stem ~ TL_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$TL_cover)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(TL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(glm.nb.TL_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(TL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_2024, aes(x = TL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = TL_cover, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = TL_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Deckung Baumschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~TL_cover_2024_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+#recycled slightly edited function from 2019 analysis for non-linear regression
+pplot_reg.lines.single.plots(model_final, ind_data_2024, 2024)
 
 
 
@@ -635,7 +532,7 @@ check_model(model_final) # difficult
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ soil_water ####
 
-glm.soil_water <- lm(prop.flower ~ soil_water, data = ind_data_2024)
+lm.soil_water <- lm(car::logit(prop.flower, adjust = 0.0001) ~ soil_water, data = ind_data_2024)
 range.x <- range(ind_data_2024$soil_water)
 # df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
@@ -680,7 +577,7 @@ ggsave(filename = "Plots/regline_prop.flower~soil_water_2024_alternative.png", p
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ HL_cover ####
 
-lm.HL_cover <- lm(prop.flower ~ HL_cover, data = ind_data_2024)
+lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$HL_cover)
 # df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
@@ -1146,7 +1043,6 @@ ind_data_merged
 
 
 
-
 #___________________________________________________________________________________
 #### Model - Stem Count Per Patch (nb.stem) ####
 
@@ -1175,182 +1071,10 @@ check_model(model_final)
 
 
 #___________________________________________________________________________________
-#### > Plotting - nb.stem ~ soil_depth ####
+#### > Plotting - nb.stem ~ all sign env vars ####
 
-lm.soil_depth <- glm.nb(nb.stem ~ soil_depth, data = ind_data_merged)
-range.x <- range(ind_data_merged$soil_depth)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.soil_depth,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = soil_depth, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Bodentiefe [cm]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~soil_depth_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ PAR ####
-
-lm.PAR <- glm.nb(nb.stem ~ PAR, data = ind_data_merged)
-range.x <- range(ind_data_merged$PAR)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(PAR = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.PAR,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(PAR = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_merged, aes(x = PAR, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = PAR, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = PAR, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Photosynthetisch aktive Strahlung [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~PAR_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ HL_cover ####
-
-lm.HL_cover <- glm.nb(nb.stem ~ HL_cover, data = ind_data_merged)
-range.x <- range(ind_data_merged$HL_cover)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.HL_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = HL_cover, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Deckung Krautschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~HL_cover_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-
-
-
-#___________________________________________________________________________________
-#### > Plotting - nb.stem ~ soil_cover ####
-
-lm.soil_cover <- glm.nb(nb.stem ~ soil_cover, data = ind_data_merged)
-range.x <- range(ind_data_merged$soil_cover)
-# df with predictions, lower and upper limits of CIs: 
-new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.soil_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
-
-
-plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_line(aes(x = soil_cover, y = point.estimate),
-            data = new.y,
-            colour = "darkgreen") + 
-  geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA, fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
-  labs(x = "Deckung offener Boden [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# save file
-ggsave(filename = "Plots/regline_nb.stem~soil_cover_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+#recycled slightly edited function from 2019 analysis for non-linear regression
+pplot_reg.lines.single.plots(model_final, ind_data_merged, "merged")
 
 
 
@@ -1390,11 +1114,11 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ soil_depth ####
 
-lm.soil_depth <- glm(prop.flower ~ soil_depth, data = ind_data_merged)
+glm.soil_depth <- glm(car::logit(prop.flower, adjust = 0.0001) ~ soil_depth, data = ind_data_merged)
 range.x <- range(ind_data_merged$soil_depth)
 # df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.soil_depth,
+new.y <- predict(glm.soil_depth,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
@@ -1435,11 +1159,11 @@ ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged_alternative.png",
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ HL_cover ####
 
-lm.HL_cover <- glm(prop.flower ~ HL_cover, data = ind_data_merged)
+glm.HL_cover <- glm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
 range.x <- range(ind_data_merged$HL_cover)
 # df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.HL_cover,
+new.y <- predict(glm.HL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
