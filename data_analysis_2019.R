@@ -201,7 +201,7 @@ str(ind_data)
 #___________________________________________________________________________________________________
 #### Data Preparation ####
 
-ind_data$management2 <- factor(ind_data$management2, levels = c("CC", "5yr", "beech_forest", "spruce_forest"), labels = c("2018", "2013", "Buche", "Fichte"))
+ind_data$management2 <- factor(ind_data$management2, levels = c("CC", "5yr", "beech_forest", "spruce_forest"), labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 # differences between environmental variables
 names(ind_data)
@@ -294,7 +294,7 @@ for (i in 1:dim(result.tab)[1]) { # i = 11
   temp.env.name <- result.tab[i, "env.names"] 
   
   p <- ggplot(ind_data, aes_string(x = temp.y, y =  temp.x)) + 
-    geom_boxplot(fill = c("firebrick", "gold", "darkblue", "forestgreen")) +
+    geom_boxplot(fill = c("forestgreen", "gold", "firebrick", "darkblue")) +
     labs(x = "
          ", y = temp.env.name) +
     ylim(range.y) +
@@ -453,7 +453,7 @@ ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height 
 # hier jetzt nur für die beiden Kiefernflächen!
 
 ind_data$prop.flower <- ind_data$prop.flower / 100
-ind_data.kiefer <- subset(ind_data, management2 == "2013" | management2 == "2018")
+ind_data.kiefer <- subset(ind_data, management2 == "Kiefer (entb.)" | management2 == "Kiefer (n. entb.)")
 
 lm2 <- lm(car::logit(prop.flower, adjust = 0.0001) ~ management2 + slope + soil_depth + soil_water1 + soil_water2 + PAR + HL_cover + SL_cover + moss_cover, data = ind_data.kiefer)
 #plot(lm2)
