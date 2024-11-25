@@ -10,6 +10,7 @@ library(patchwork)
 library(tidyverse)
 library(magrittr)
 library(performance)
+library(corrplot)
 
 
 
@@ -303,6 +304,25 @@ result.tab
 #stem.height   #done
 #leaf.area     #done
 
+
+#___________________________________________________________________________________
+#### Correlation table ####
+
+subsetcorr <- subset(ind_data_2024, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh.90, l.leaves, w.leaves))
+#add leaf area
+subsetcorr <- subsetcorr %>%
+  mutate(leaf.area = w.leaves * l.leaves)
+#make matrix
+cormatrix <- cor(subsetcorr)
+corpvalues <- cor.mtest(subsetcorr)
+#matrix with numbers
+png("Plots/corrmatrix_numbers_2024.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="number")
+dev.off()
+#matrix with circles
+png("Plots/corrmatrix_circle_2024.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
+dev.off()
 
 #___________________________________________________________________________________
 #### Model - Stem Count Per Patch (nb.stem) ####
@@ -1040,6 +1060,22 @@ names(ind_data_2019_common) <- common_columns
 ind_data_merged <- rbind(ind_data_2024_common, ind_data_2019_common)
 
 ind_data_merged
+
+#___________________________________________________________________________________
+#### Correlation table ####
+str(ind_data_merged)
+subsetcorr <- subset(ind_data_merged, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))
+#make matrix
+cormatrix <- cor(subsetcorr)
+corpvalues <- cor.mtest(subsetcorr)
+#matrix with numbers
+png("Plots/corrmatrix_numbers_merged.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="number")
+dev.off()
+#matrix with circles
+png("Plots/corrmatrix_circle_merged.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
+dev.off()
 
 
 
