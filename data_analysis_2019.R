@@ -777,3 +777,4 @@ ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height 
 
 #moving the model result table, since directly saving it in the folder created problems
 file.rename("Model.result.tables_2019.xlsx", "Result Tables/Model.result.tables_2019.xlsx")
+
