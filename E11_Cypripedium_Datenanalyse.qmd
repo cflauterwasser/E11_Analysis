@@ -81,6 +81,32 @@ rename.letters <- function(x) {
 }
 
 
+
+pplot_reg.lines.single.plots <- function(model_final, df.year, year) {
+  expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
+  expl.vars$new.name <- result.tab$env.names[match(expl.vars$orig.name, result.tab$parameter)]
+  
+  if (any(sapply(model_final$model, class) == "factor")) {
+    factor.vars <- colnames(model_final$model)[which(sapply(model_final$model, class) == "factor")]
+    expl.vars <- expl.vars[(expl.vars$orig.name != factor.vars), ]
+  }
+  for (i in 2:dim(expl.vars)[1]) { # i=2
+    plots_reg.lines.single <- ggplot(data = df.year, aes_string(y = expl.vars$orig.name[1], x = expl.vars$orig.name[i])) + 
+      geom_point(colour = "black", alpha = 0.25, shape = 16, size = 0.6) +
+      geom_smooth(method = MASS::glm.nb, formula = y ~ x, color = "darkgreen", se = TRUE, fill = "green", alpha = 0.35) + 
+      labs(x = expl.vars$new.name[i], y = expl.vars$new.name[1]) +
+      theme(panel.background = element_blank(),
+            panel.border = element_rect(colour = "black", fill = NA),
+            plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
+            legend.position = "none")
+    #### ploting
+    file_name <- paste0("Plots/regline_", expl.vars$orig.name[1], "_", expl.vars$orig.name[i], "_", year, "_alternative", ".png")
+    ggsave(filename = file_name, plot = plots_reg.lines.single, width = 7.4, height = 7.4, units = "cm")
+  }
+}
+
+
+
 write_model_table <- function(model.result = NULL, file.name = NULL) {
   
   if (file.name %in% list.files()) {
@@ -225,11 +251,13 @@ Benennung der Umweltvariablen
 result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "Photosynthetisch aktive Strahlung [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
 ```
 
-Exportierung der Ergebnistabelle
-
 ```{r}
 result.tab
+```
 
+Exportierung der Ergebnistabelle
+
+```{r, eval=FALSE}
 write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
 ```
 
@@ -237,7 +265,7 @@ write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
 
 ## Boxplots zu Flächenvergleich von Umweltparametern
 
-```{r}
+```{r, eval=FALSE}
 for (i in 1:dim(result.tab)[1]) { # i = 11
   temp.x <- rownames(result.tab)[i]
   temp.y <- "management2"
@@ -326,7 +354,9 @@ summary(glm3)
 
 
 model_final <- glm3
+```
 
+```{r, eval=FALSE}
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
@@ -346,67 +376,12 @@ check_model(model_final)
 
 ### Visualisierungen
 
-**Sprosszahl \~ Exposition**
+**Sprosszahl \~ Alle signifikanten Umweltvariablen**
 
-```{r}
-plot <- ggplot(ind_data_2024, aes(x = exposition, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Exposition [°]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
+```{r, eval=FALSE}
 
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~exposition_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
-
-**Sprosszahl \~ Deckung Krautschicht**
-
-```{r}
-plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung Krautschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
-
-**Sprosszahl \~ Deckung Baumschicht**
-
-```{r}
-plot <- ggplot(ind_data_2024, aes(x = TL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung Baumschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~TL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+# leicht bearbeitete Funktion aus der Analyse von 2019 für nichtlineare Regression
+pplot_reg.lines.single.plots(model_final, ind_data_2024, 2024)
 ```
 
 <br>
@@ -436,12 +411,10 @@ summary(lm4)
 
 
 model_final <- lm4
-
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
-```{r}
-summary(model_final)
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -463,12 +436,33 @@ check_model(model_final)
 **Horstgröße \~ Bodentiefe**
 
 ```{r}
+lm.soil_depth <- lm(log(area.bunch) ~ soil_depth, data = ind_data_2024)
+range.x <- range(ind_data_2024$soil_depth)
+new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_depth,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_depth, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Bodentiefe [cm]",
        y = "Horstgröße [m²]") +
   theme(panel.background = element_blank(),
@@ -476,20 +470,42 @@ plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_log(area.bunch)~soil_depth_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Horstgröße \~ Deckung Krautschicht**
 
 ```{r}
+lm.HL_cover <- lm(log(area.bunch) ~ HL_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$HL_cover)
+new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.HL_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = HL_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Krautschicht [%]",
        y = "Horstgröße [m²]") +
   theme(panel.background = element_blank(),
@@ -497,8 +513,9 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_log(area.bunch)~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -525,7 +542,9 @@ summary(glm3)
 
 
 model_final <- glm3
+```
 
+```{r, eval=FALSE}
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
@@ -548,42 +567,94 @@ check_model(model_final)
 **Blüherfolg \~ Bodenfeuchte**
 
 ```{r}
-plot <- ggplot(ind_data_2024, aes(x = soil_water, y = prop.flower)) +
+lm.soil_water <- lm(car::logit(prop.flower, adjust = 0.0001) ~ soil_water, data = ind_data_2024)
+range.x <- range(ind_data_2024$soil_water)
+new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_water,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
+
+
+plot <- ggplot(data = ind_data_2024,
+               aes_string(y = "prop.flower", x = "soil_water")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_water, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA,
+              fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Bodenfeuchte [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_prop.flower~soil_water_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Blüherfolg \~ Deckung Krautschicht**
 
 ```{r}
-plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = prop.flower)) +
+lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$HL_cover)
+new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.HL_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
+
+
+plot <- ggplot(data = ind_data_2024,
+               aes_string(y = "prop.flower", x = "HL_cover")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = HL_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA,
+              fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -655,7 +726,9 @@ anova(lm12, lm13)
 summary(lm13)
 
 model_final <- lm13
+```
 
+```{r, eval=FALSE}
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
@@ -701,7 +774,9 @@ summary(lm4)
 
 
 model_final <- lm4
+```
 
+```{r, eval=FALSE}
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
@@ -724,12 +799,33 @@ check_model(model_final)
 **Sprossanzahl pro m² Horstgröße \~ Höhe 90% der Vegetation**
 
 ```{r}
+lm.vh.90 <- lm(stem.per.sqm ~ vh.90, data = ind_data_2024)
+range.x <- range(ind_data_2024$vh.90)
+new.x <- data.frame(vh.90 = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.vh.90,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(vh.90 = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = vh.90, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = vh.90, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Höhe 90% der Vegetation [cm]",
        y = "Sprossanzahl pro m² Horstgröße") +
   theme(panel.background = element_blank(),
@@ -737,8 +833,9 @@ plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_stem.per.sqm~vh.90_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -764,12 +861,10 @@ summary(lm3)
 
 
 model_final <- lm3
-
-write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
-```{r}
-summary(model_final)
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -791,21 +886,44 @@ check_model(model_final)
 **Blattfläche \~ Deckung offener Boden**
 
 ```{r}
+lm.soil_cover <- lm(leaf.area ~ soil_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$soil_cover)
+new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = leaf.area)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung offener Boden [%]",
        y = "Blattfläche [cm²]") +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         legend.position = "none")
 
-plot
 
-# Speichern der Bilddatei
+plot
+```
+
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_leaf.area~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -831,7 +949,9 @@ summary(lm3)
 
 
 model_final <- lm3
+```
 
+```{r, eval=FALSE}
 write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
@@ -854,12 +974,33 @@ check_model(model_final)
 **Deckung Krautschicht \~ Deckung Strauchschicht**
 
 ```{r}
+lm.SL_cover <- lm(HL_cover ~ SL_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$SL_cover)
+new.x <- data.frame(SL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.SL_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(SL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = SL_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = SL_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Strauchschicht [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -867,20 +1008,42 @@ plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Deckung Krautschicht \~ Deckung offener Boden**
 
 ```{r}
+lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$soil_cover)
+new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung offener Boden [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -888,20 +1051,42 @@ plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~soil_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Deckung Krautschicht \~ Deckung Moosschicht**
 
 ```{r}
+lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_2024)
+range.x <- range(ind_data_2024$moss_cover)
+new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.moss_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = moss_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = moss_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Moosschicht [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -909,8 +1094,9 @@ plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei 
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~moss_cover_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -920,7 +1106,7 @@ ggsave(filename = "Plots/regline_HL_cover~moss_cover_2024.png", plot = plot, wid
 
 Direktes Abspeichern nach jedem Modell im Ordner führte zu Problemen. Daher nachträgliches Verschieben in den vorgesehenen Ordner.
 
-```{r}
+```{r, eval=FALSE}
 file.rename("Model.result.tables_2024.xlsx", "Result Tables/Model.result.tables_2024.xlsx")
 ```
 
@@ -956,8 +1142,6 @@ ind_data_merged <- rbind(ind_data_2024_common, ind_data_2019_common)
 ```{r}
 #| warning: false
 #| output: false
-
-str(ind_data_merged)
 subsetcorr <- subset(ind_data_merged, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))
 #make matrix
 cormatrix <- cor(subsetcorr)
@@ -970,7 +1154,6 @@ dev.off()
 png("Plots/corrmatrix_circle_merged.png", width = 25, height = 25, units = "cm", res = 300)
 corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
 dev.off()
-
 ```
 
 ```{r}
@@ -998,9 +1181,10 @@ summary(glm2)
 
 
 model_final <- glm2
+```
 
-
-write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -1019,88 +1203,10 @@ check_model(model_final)
 
 ### Visualisierungen
 
-**Sprosszahl pro Horst \~ Bodentiefe**
+**Sprosszahl pro Horst \~ Alle signifikanten Umweltvariablen**
 
-```{r}
-plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Bodentiefe [cm]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~soil_depth_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
-
-**Sprosszahl pro Horst \~ Photosynthetisch aktive Strahlung**
-
-```{r}
-plot <- ggplot(ind_data_merged, aes(x = PAR, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Photosynthetisch aktive Strahlung [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~PAR_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
-
-**Sprosszahl pro Horst \~ Deckung Krautschicht**
-
-```{r}
-plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung Krautschicht [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~HL_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
-```
-
-**Sprosszahl pro Horst \~ Deckung offener Boden**
-
-```{r}
-plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = nb.stem)) +
-  geom_point(colour = "black",
-             alpha = 0.25,
-             shape = 16,
-             size = 0.6) +
-  geom_smooth(method = "glm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
-  labs(x = "Deckung offener Boden [%]",
-       y = "Sprossanzahl pro Horst") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none")
-
-plot
-
-# Speichern der Bilddatei
-ggsave(filename = "Plots/regline_nb.stem~soil_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
+```{r, eval=FALSE}
+pplot_reg.lines.single.plots(model_final, ind_data_merged, "merged")
 ```
 
 <br>
@@ -1129,8 +1235,10 @@ anova(glm3, glm4)
 summary(glm4)
 
 model_final <- glm4
+```
 
-write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -1152,42 +1260,99 @@ check_model(model_final)
 **Blüherfolg \~ Bodentiefe**
 
 ```{r}
-plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = prop.flower)) +
+glm.soil_depth <- glm(car::logit(prop.flower, adjust = 0.0001) ~ soil_depth, data = ind_data_merged)
+range.x <- range(ind_data_merged$soil_depth)
+new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(glm.soil_depth,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
+plot <- ggplot(data = ind_data_merged,
+               aes_string(y = "prop.flower", x = "soil_depth")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_depth, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA,
+              fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Bodentiefe [cm]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(
+    breaks = seq(0, 100, 25),  # Specify the breaks
+    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Blüherfolg \~ Deckung Krautschicht**
 
 ```{r}
-plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = prop.flower)) +
+lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
+range.x <- range(ind_data_merged$HL_cover)
+new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.HL_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
+
+
+
+plot <- ggplot(data = ind_data_merged,
+               aes_string(y = "prop.flower", x = "HL_cover")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = HL_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA,
+              fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(
+    breaks = seq(0, 100, 25),  # Specify the breaks
+    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -1213,7 +1378,10 @@ summary(lm3)
 
 
 model_final <- lm3
-write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```
+
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -1235,12 +1403,33 @@ check_model(model_final)
 **Sprossanzahl pro m² Horstgröße \~ Bodenfeuchte**
 
 ```{r}
+lm.soil_water <- lm(stem.per.sqm ~ soil_water, data = ind_data_merged)
+range.x <- range(ind_data_merged$soil_water)
+new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_water,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1),
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_water, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Bodenfeuchte [%]",
        y = "Sprossanzahl pro m² Horstgröße") +
   theme(panel.background = element_blank(),
@@ -1248,8 +1437,9 @@ plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_stem.per.sqm~soil_water_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -1271,8 +1461,10 @@ summary(lm2)
 
 
 model_final <- lm2
-write_model_table(model.result = model_final, file.name = "Model.result.tables_merged.xlsx")
+```
 
+```{r, eval=FALSE}
+write_model_table(model.result = model_final, file.name = "Model.result.tables_2024.xlsx")
 ```
 
 ```{r}
@@ -1294,12 +1486,33 @@ check_model(model_final)
 **Deckung Krautschicht \~ Deckung Strauchschicht**
 
 ```{r}
+lm.slope <- lm(HL_cover ~ slope, data = ind_data_merged)
+range.x <- range(ind_data_merged$slope)
+new.x <- data.frame(slope = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.slope,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(slope = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = slope, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = slope, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Strauchschicht [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -1307,20 +1520,42 @@ plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei 
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~slope_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Deckung Krautschicht \~ Photosynthetisch aktive Strahlung**
 
 ```{r}
+lm.PAR <- lm(HL_cover ~ PAR, data = ind_data_merged)
+range.x <- range(ind_data_merged$PAR)
+new.x <- data.frame(PAR = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.PAR,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(PAR = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = PAR, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = PAR, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Photosynthetisch aktive Strahlung [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -1328,20 +1563,42 @@ plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei 
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~PAR_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Deckung Krautschicht \~ Deckung offener Boden**
 
 ```{r}
+lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_merged)
+range.x <- range(ind_data_merged$soil_cover)
+new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.soil_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = soil_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung offener Boden [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -1349,20 +1606,42 @@ plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei 
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~soil_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
 **Deckung Krautschicht \~ Deckung Moosschicht**
 
 ```{r}
+lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_merged)
+range.x <- range(ind_data_merged$moss_cover)
+new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
+new.y <- predict(lm.moss_cover,
+                 newdata = new.x,
+                 se.fit = TRUE) %>% 
+  as.data.frame() %>% 
+  mutate(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
+         lower = (fit - 1.96*se.fit), 
+         point.estimate = (fit), 
+         upper = (fit + 1.96*se.fit))
+
+
 plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_smooth(method = "lm", formula= y~x, aes(group=1), color = "darkgreen", fill = "green", linetype = 1) +
+  geom_line(aes(x = moss_cover, y = point.estimate),
+            data = new.y,
+            colour = "darkgreen",
+            linewidth = 1) + 
+  geom_ribbon(aes(x = moss_cover, ymin = lower, ymax = upper),
+              data = new.y,
+              color = NA, fill = "green",
+              alpha = 0.35,
+              inherit.aes = FALSE) + 
   labs(x = "Deckung Moosschicht [%]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
@@ -1370,8 +1649,9 @@ plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
         legend.position = "none")
 
 plot
+```
 
-# Speichern der Bilddatei 
+```{r, eval=FALSE}
 ggsave(filename = "Plots/regline_HL_cover~moss_cover_merged.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 ```
 
@@ -1381,6 +1661,6 @@ ggsave(filename = "Plots/regline_HL_cover~moss_cover_merged.png", plot = plot, w
 
 Direktes Abspeichern nach jedem Modell im Ordner führte zu Problemen. Daher nachträgliches Verschieben in den vorgesehenen Ordner.
 
-```{r}
+```{r, eval=FALSE}
 file.rename("Model.result.tables_merged.xlsx", "Result Tables/Model.result.tables_merged.xlsx")
 ```

@@ -409,15 +409,12 @@ check_model(model_final)
 
 lm.soil_depth <- lm(log(area.bunch) ~ soil_depth, data = ind_data_2024)
 range.x <- range(ind_data_2024$soil_depth)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_depth,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -430,7 +427,8 @@ plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
              size = 0.6) +
   geom_line(aes(x = soil_depth, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -454,15 +452,12 @@ ggsave(filename = "Plots/regline_log(area.bunch)~soil_depth_2024_alternative.png
 
 lm.HL_cover <- lm(log(area.bunch) ~ HL_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$HL_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.HL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -475,7 +470,8 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
              size = 0.6) +
   geom_line(aes(x = HL_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -556,15 +552,12 @@ check_model(model_final) # difficult
 
 lm.soil_water <- lm(car::logit(prop.flower, adjust = 0.0001) ~ soil_water, data = ind_data_2024)
 range.x <- range(ind_data_2024$soil_water)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_water,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = invlogit(fit - 1.96*se.fit), 
          point.estimate = invlogit(fit), 
          upper = invlogit(fit + 1.96*se.fit)) 
@@ -578,7 +571,8 @@ plot <- ggplot(data = ind_data_2024,
              size = 0.6) +
   geom_line(aes(x = soil_water, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
               data = new.y,
               color = NA,
@@ -606,15 +600,12 @@ ggsave(filename = "Plots/regline_prop.flower~soil_water_2024_alternative.png", p
 
 lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$HL_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.HL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = invlogit(fit - 1.96*se.fit), 
          point.estimate = invlogit(fit), 
          upper = invlogit(fit + 1.96*se.fit)) 
@@ -628,7 +619,8 @@ plot <- ggplot(data = ind_data_2024,
              size = 0.6) +
   geom_line(aes(x = HL_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA,
@@ -764,15 +756,12 @@ check_model(model_final)
 
 lm.vh.90 <- lm(stem.per.sqm ~ vh.90, data = ind_data_2024)
 range.x <- range(ind_data_2024$vh.90)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(vh.90 = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.vh.90,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(vh.90 = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -785,7 +774,8 @@ plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
              size = 0.6) +
   geom_line(aes(x = vh.90, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = vh.90, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -838,15 +828,12 @@ check_model(model_final)
 
 lm.soil_cover <- lm(leaf.area ~ soil_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$soil_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -859,7 +846,8 @@ plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = leaf.area)) +
              size = 0.6) +
   geom_line(aes(x = soil_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -914,15 +902,12 @@ check_model(model_final)
 
 lm.SL_cover <- lm(HL_cover ~ SL_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$SL_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(SL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.SL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(SL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -935,7 +920,8 @@ plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = SL_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = SL_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -959,15 +945,12 @@ ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024_alternative.png", plot =
 
 lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$soil_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -980,7 +963,8 @@ plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = soil_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1004,15 +988,12 @@ ggsave(filename = "Plots/regline_HL_cover~soil_cover_2024_alternative.png", plot
 
 lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_2024)
 range.x <- range(ind_data_2024$moss_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.moss_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1025,7 +1006,8 @@ plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = moss_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = moss_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1166,15 +1148,12 @@ check_model(model_final)
 
 glm.soil_depth <- glm(car::logit(prop.flower, adjust = 0.0001) ~ soil_depth, data = ind_data_merged)
 range.x <- range(ind_data_merged$soil_depth)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(glm.soil_depth,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1188,7 +1167,8 @@ plot <- ggplot(data = ind_data_merged,
              size = 0.6) +
   geom_line(aes(x = soil_depth, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
               data = new.y,
               color = NA,
@@ -1218,15 +1198,12 @@ ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged_alternative.png",
 
 lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
 range.x <- range(ind_data_merged$HL_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.HL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = invlogit(fit - 1.96*se.fit), 
          point.estimate = invlogit(fit), 
          upper = invlogit(fit + 1.96*se.fit)) 
@@ -1241,7 +1218,8 @@ plot <- ggplot(data = ind_data_merged,
              size = 0.6) +
   geom_line(aes(x = HL_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA,
@@ -1300,15 +1278,12 @@ check_model(model_final)
 
 lm.soil_water <- lm(stem.per.sqm ~ soil_water, data = ind_data_merged)
 range.x <- range(ind_data_merged$soil_water)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_water,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
-  mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
+  mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1),
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1321,7 +1296,8 @@ plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
              size = 0.6) +
   geom_line(aes(x = soil_water, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1370,15 +1346,12 @@ check_model(model_final)
 
 lm.slope <- lm(HL_cover ~ slope, data = ind_data_merged)
 range.x <- range(ind_data_merged$slope)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(slope = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.slope,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(slope = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1391,7 +1364,8 @@ plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = slope, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = slope, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1415,15 +1389,12 @@ ggsave(filename = "Plots/regline_HL_cover~slope_merged_alternative.png", plot = 
 
 lm.PAR <- lm(HL_cover ~ PAR, data = ind_data_merged)
 range.x <- range(ind_data_merged$PAR)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(PAR = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.PAR,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(PAR = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1436,7 +1407,8 @@ plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = PAR, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = PAR, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1460,15 +1432,12 @@ ggsave(filename = "Plots/regline_HL_cover~PAR_merged_alternative.png", plot = pl
 
 lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_merged)
 range.x <- range(ind_data_merged$soil_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1481,7 +1450,8 @@ plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = soil_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = soil_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
@@ -1505,15 +1475,12 @@ ggsave(filename = "Plots/regline_HL_cover~soil_cover_merged_alternative.png", pl
 
 lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_merged)
 range.x <- range(ind_data_merged$moss_cover)
-# df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.moss_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         # model object mod1 has a component called linkinv that 
-         # is a function that inverts the link function of the GLM:
          lower = (fit - 1.96*se.fit), 
          point.estimate = (fit), 
          upper = (fit + 1.96*se.fit))
@@ -1526,7 +1493,8 @@ plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
              size = 0.6) +
   geom_line(aes(x = moss_cover, y = point.estimate),
             data = new.y,
-            colour = "darkgreen") + 
+            colour = "darkgreen",
+            linewidth = 1) + 
   geom_ribbon(aes(x = moss_cover, ymin = lower, ymax = upper),
               data = new.y,
               color = NA, fill = "green",
