@@ -158,127 +158,16 @@ ind_data_2019$area.bunch <- ind_data_2019$area.bunch / 10000
 
   
 
-
-#___________________________________________________________________________________
-#### _________________________ ####
-#### RESULT TABLE, BOXPLOTS ####
-
-
-
-
-#___________________________________________________________________________________
-#### Calculating Means and Standard Errors ####
-
-means <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], mean)
-se <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], std.error)
+var.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "PAR [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
+var.names
 
 
 
 #___________________________________________________________________________________
-#### Creating Results Table ####
-
-result.tab <- data.frame(matrix(NA, nrow = 21, ncol = 13))
-rownames(result.tab) <- colnames(ind_data_2024[, c(6:13, 15:27)])
-colnames(result.tab) <- c("parameter", levels(ind_data_2024$management2), "F.val", "df", "P.val", "Signif", paste0(levels(ind_data_2024$management2), ".letter"))
+#### _______________ ####
+#### MODELLING 2024 ####
 
 
-#___________________________________________________________________________________
-#### ANOVA and Tukey's HSD Test ####
-
-for (i in 1:dim(result.tab)[1]) { # i = 13
-  temp <- rownames(result.tab)[i]
-  mean.se <- paste0(format(round(means[, temp], 2), nsmall = 2), "±", format(round(se[, temp], 3), nsmall = 3))
-  mean.se <- gsub(" ", "", mean.se)
-  aov1 <- aov(as.formula(paste0(temp, " ~ management2")), data = ind_data_2024) 
-  anova1 <- summary(aov1)
-  TukeyHSD.letters <- HSD.test(aov1, "management2", group = TRUE)
-  TukeyHSD.letters <- TukeyHSD.letters$groups
-  TukeyHSD.letters <- TukeyHSD.letters[order(match(rownames(TukeyHSD.letters), levels(ind_data_2024$management2))),]
-  
-  
-  TukeyHSD.letters <- rename.letters(TukeyHSD.letters)
-  TukeyHSD.letters <- as.character(TukeyHSD.letters[, "groups"])
-  degfr <- paste(anova1[[1]]$Df, collapse = " and ")
-  fval <- format(round(anova1[[1]]$"F value"[1], 2), nsmall = 2)
-  pval <- round(anova1[[1]]$"Pr(>F)"[1], digits = 4)
-  symp <- symnum(pval, corr = FALSE,
-                 cutpoints = c(0,  .001,.01,.05, 1),
-                 symbols = c("***","**","*","n.s."))
-  pval <- format.pval(pval, eps = .001, digits = 2)
-  res_temp <- c(temp, mean.se, fval, degfr, pval, symp, TukeyHSD.letters)
-  result.tab[i, ] <- res_temp
-}
-
-
-
-#___________________________________________________________________________________
-#### > Naming Environmental Variables ####
-
-result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "PAR [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
-result.tab
-
-
-
-#___________________________________________________________________________________
-#### > Writing Results to Excel Sheet ####
-
-write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
-
-
-
-#___________________________________________________________________________________
-#### > Boxplots Env Vars ~ Management ####
-
-for (i in 1:dim(result.tab)[1]) { # i = 11
-  temp.x <- rownames(result.tab)[i]
-  temp.y <- "management2"
-  range.y <- range(ind_data_2024[, temp.x], na.rm = TRUE)
-  plus.temp <- diff(range.y) * 0.1
-  range.y[1] <- range.y[1] * 0.9
-  range.y[2] <- range.y[2] * 1.1
-  max.y <- aggregate(as.formula(paste0(temp.x, " ~ management2")), data = ind_data_2024, FUN = function(X) max(X, na.rm = TRUE))
-  temp.env.name <- result.tab[i, "env.names"] 
-  
-  p <- ggplot(ind_data_2024, aes_string(x = temp.y, y =  temp.x)) + 
-    geom_boxplot(fill = c("forestgreen", "gold", "firebrick", "darkblue")) +
-    labs(x = "
-         ", y = temp.env.name) +
-    ylim(range.y) +
-    geom_text(x = 1, y = max.y[1, 2] + plus.temp, label = result.tab[i, 10]) +
-    geom_text(x = 2, y = max.y[2, 2] + plus.temp, label = result.tab[i, 11]) +
-    geom_text(x = 3, y = max.y[3, 2] + plus.temp, label = result.tab[i, 12]) +
-    geom_text(x = 4, y = max.y[4, 2] + plus.temp, label = result.tab[i, 13]) +
-    theme(panel.background = element_blank(),
-          panel.border = element_rect(colour = "black", fill = NA),
-          axis.text.x = element_text(angle = 45, hjust=1),
-          axis.title.y = element_text(),
-          plot.margin = unit(c(0, 0.0, 0.2, 0), "cm")) 
-  file_name <- paste0("Plots/boxplot_", temp.x, "_2024.png")
-  ggsave(filename = file_name, plot = p, width = 7.4, height = 8.5, units = "cm")
-}
-
-
-
-
-#___________________________________________________________________________________
-#### ___________ ####
-#### MODELLING ####
-
-
-
-
-#___________________________________________________________________________________
-#### Available Dependent Variables ####
-
-result.tab
-
-#nb.stem       #done
-#stem.per.sqm  #done
-#area.bunch    #done
-#nb.flower     #contained in prop.flower
-#prop.flower   #done
-#stem.height   #done
-#leaf.area     #done
 
 #___________________________________________________________________________________
 #### Correlation table ####
@@ -534,59 +423,6 @@ plot(model_final) # difficult
 par(mfrow = c(1, 1))
 
 check_model(model_final) # difficult
-
-
-#___________________________________________________________________________________
-#### > Plotting - prop.flower ~ management2 ####
-
-
-
-
-# Perform pairwise Wilcoxon tests
-wilcox_results <- pairwise.wilcox.test(ind_data_2024$prop.flower, ind_data_2024$management2, p.adjust.method = "holm")
-
-max_y <- max(ind_data_2024$prop.flower)
-
-letters_df <- data.frame(
-  management2 = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"),
-  y_position = rep(max_y + 0.05, 4),
-  label = c("a", "b", "ab", "b")
-)
-
-
-# Create the violin plot
-plot <- ggplot(ind_data_2024, aes(x = management2, y = prop.flower,
-                             fill = management2,
-                             col = management2)) +
-  geom_violin(scale ="width",
-              alpha =0.1) + 
-  geom_jitter(aes(group = management2),
-              width = 0.3,
-              height = 0,
-              alpha = 0.3) + 
-  stat_summary(fun="median",
-               geom="crossbar",
-               mapping = aes(ymin=after_stat(y), ymax=after_stat(y)),
-               width=1,
-               position = position_dodge(),
-               show.legend = FALSE) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Management / Standort",
-       y = "Anteil blühender Sprosse") +
-  theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill = NA),
-        legend.position = "none") +
-  scale_fill_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +
-  scale_color_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +
-  geom_text(data = letters_df, aes(x = management2, y = y_position, label = label), 
-            position = position_dodge(0.9), size = 5, color = "black")  # Set color to black
-
-
-
-plot
-
-# save file
-ggsave(filename = "Plots/violin_prop.flower~management_2024.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
 
 
 

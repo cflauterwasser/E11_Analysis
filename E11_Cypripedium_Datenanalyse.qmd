@@ -84,7 +84,7 @@ rename.letters <- function(x) {
 
 pplot_reg.lines.single.plots <- function(model_final, df.year, year) {
   expl.vars <- data.frame(orig.name = colnames(model_final$model), stringsAsFactors = FALSE)
-  expl.vars$new.name <- result.tab$env.names[match(expl.vars$orig.name, result.tab$parameter)]
+  expl.vars$new.name <- var.names[match(expl.vars$orig.name, vars$parameters)]
   
   if (any(sapply(model_final$model, class) == "factor")) {
     factor.vars <- colnames(model_final$model)[which(sapply(model_final$model, class) == "factor")]
@@ -188,117 +188,39 @@ ind_data_2019 <- ind_data_2019 %>%
 # area.bunch from cm² to m²
 ind_data_2024$area.bunch <- ind_data_2024$area.bunch / 10000
 ind_data_2019$area.bunch <- ind_data_2019$area.bunch / 10000
+
+
+
+parameters <- colnames(ind_data_2024[, c(6:13, 15:27)])
+var.names <- c("Sprossanzahl pro Horst",
+               "Sprossanzahl pro m² Horstgröße",
+               "Horstgröße [m²]",
+               "Anzahl blühender Sprosse",
+               "Anteil blühender Sprosse [%]",
+               "Sprosshöhe [cm]",
+               "Blattlänge [cm]",
+               "Blattbreite [cm]",
+               "Exposition [°]",
+               "Neigung [%]",
+               "Bodentiefe [cm]",
+               "Bodenfeuchte [%]",
+               "PAR [%]",
+               "Deckung Krautschicht [%]",
+               "Deckung Strauchschicht [%]",
+               "Deckung Baumschicht [%]",
+               "Deckung offener Boden [%]",
+               "Deckung Moosschicht [%]",
+               "Maximale Vegetationshöhe [cm]",
+               "Höhe 90% der Vegetation [cm]",
+               "Blattfläche [cm²]")
+vars <- data.frame(parameters, var.names)
 ```
 
 <br>
 
 <br>
 
-# **2. Ergebnistabelle(n) und Boxplots**
-
-<br>
-
-## Ergebnistabelle Flächenvergleich
-
-<br>
-
-Berechnung der Mittelwerte und Standardfehler.
-
-```{r}
-means <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], mean)
-se <- aggregate(. ~ management2, data = ind_data_2024[, c(6:27)], std.error)
-```
-
-Erstellung der Ergebnistabelle
-
-```{r}
-result.tab <- data.frame(matrix(NA, nrow = 21, ncol = 13))
-rownames(result.tab) <- colnames(ind_data_2024[, c(6:13, 15:27)])
-colnames(result.tab) <- c("parameter", levels(ind_data_2024$management2), "F.val", "df", "P.val", "Signif", paste0(levels(ind_data_2024$management2), ".letter"))
-```
-
-ANOVA und Tukey's HSD Test
-
-```{r}
-for (i in 1:dim(result.tab)[1]) { # i = 13
-  temp <- rownames(result.tab)[i]
-  mean.se <- paste0(format(round(means[, temp], 2), nsmall = 2), "±", format(round(se[, temp], 3), nsmall = 3))
-  mean.se <- gsub(" ", "", mean.se)
-  aov1 <- aov(as.formula(paste0(temp, " ~ management2")), data = ind_data_2024) 
-  anova1 <- summary(aov1)
-  TukeyHSD.letters <- HSD.test(aov1, "management2", group = TRUE)
-  TukeyHSD.letters <- TukeyHSD.letters$groups
-  TukeyHSD.letters <- TukeyHSD.letters[order(match(rownames(TukeyHSD.letters), levels(ind_data_2024$management2))),]
-  
-  
-  TukeyHSD.letters <- rename.letters(TukeyHSD.letters)
-  TukeyHSD.letters <- as.character(TukeyHSD.letters[, "groups"])
-  degfr <- paste(anova1[[1]]$Df, collapse = " and ")
-  fval <- format(round(anova1[[1]]$"F value"[1], 2), nsmall = 2)
-  pval <- round(anova1[[1]]$"Pr(>F)"[1], digits = 4)
-  symp <- symnum(pval, corr = FALSE,
-                 cutpoints = c(0,  .001,.01,.05, 1),
-                 symbols = c("***","**","*","n.s."))
-  pval <- format.pval(pval, eps = .001, digits = 2)
-  res_temp <- c(temp, mean.se, fval, degfr, pval, symp, TukeyHSD.letters)
-  result.tab[i, ] <- res_temp
-}
-```
-
-Benennung der Umweltvariablen
-
-```{r}
-result.tab$env.names <- c("Sprossanzahl pro Horst", "Sprossanzahl pro m² Horstgröße", "Horstgröße [m²]", "Anzahl blühender Sprosse", "Anteil blühender Sprosse [%]", "Sprosshöhe [cm]", "Blattlänge [cm]", "Blattbreite [cm]", "Exposition [°]", "Neigung [%]", "Bodentiefe [cm]", "Bodenfeuchte [%]", "Photosynthetisch aktive Strahlung [%]", "Deckung Krautschicht [%]", "Deckung Strauchschicht [%]", "Deckung Baumschicht [%]", "Deckung offener Boden [%]", "Deckung Moosschicht [%]", "Maximale Vegetationshöhe [cm]", "Höhe 90% der Vegetation [cm]","Blattfläche [cm²]")
-```
-
-```{r}
-result.tab
-```
-
-Exportierung der Ergebnistabelle
-
-```{r, eval=FALSE}
-write.xlsx(result.tab, "Result Tables/results.diff.2024.xlsx")
-```
-
-<br>
-
-## Boxplots zu Flächenvergleich von Umweltparametern
-
-```{r, eval=FALSE}
-for (i in 1:dim(result.tab)[1]) { # i = 11
-  temp.x <- rownames(result.tab)[i]
-  temp.y <- "management2"
-  range.y <- range(ind_data_2024[, temp.x], na.rm = TRUE)
-  plus.temp <- diff(range.y) * 0.1
-  range.y[1] <- range.y[1] * 0.9
-  range.y[2] <- range.y[2] * 1.1
-  max.y <- aggregate(as.formula(paste0(temp.x, " ~ management2")), data = ind_data_2024, FUN = function(X) max(X, na.rm = TRUE))
-  temp.env.name <- result.tab[i, "env.names"] 
-  
-  p <- ggplot(ind_data_2024, aes_string(x = temp.y, y =  temp.x)) + 
-    geom_boxplot(fill = c("forestgreen", "gold", "firebrick", "darkblue")) +
-    labs(x = "
-         ", y = temp.env.name) +
-    ylim(range.y) +
-    geom_text(x = 1, y = max.y[1, 2] + plus.temp, label = result.tab[i, 10]) +
-    geom_text(x = 2, y = max.y[2, 2] + plus.temp, label = result.tab[i, 11]) +
-    geom_text(x = 3, y = max.y[3, 2] + plus.temp, label = result.tab[i, 12]) +
-    geom_text(x = 4, y = max.y[4, 2] + plus.temp, label = result.tab[i, 13]) +
-    theme(panel.background = element_blank(),
-          panel.border = element_rect(colour = "black", fill = NA),
-          axis.title.y = element_text(),
-          plot.margin = unit(c(0, 0.0, 0.2, 0), "cm")) 
-  file_name <- paste0("Plots/boxplot_", temp.x, "_2024.png")
-  ggsave(filename = file_name, plot = p, width = 7.4, height = 7.4, units = "cm")
-}
-```
-
-<br>
-
-<br>
-
-# **3. Ökologische Modellierung 2024**
+# **2. Ökologische Modellierung 2024**
 
 <br>
 
@@ -567,38 +489,36 @@ check_model(model_final)
 **Blüherfolg \~ Bodenfeuchte**
 
 ```{r}
-lm.soil_water <- lm(car::logit(prop.flower, adjust = 0.0001) ~ soil_water, data = ind_data_2024)
-range.x <- range(ind_data_2024$soil_water)
-new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.soil_water,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1), 
-         lower = invlogit(fit - 1.96*se.fit), 
-         point.estimate = invlogit(fit), 
-         upper = invlogit(fit + 1.96*se.fit)) 
+glm_soil_water <- glm(cbind(nb.flower, nb.stem) ~ soil_water, 
+                      family = binomial,
+                      data = ind_data_2024)
+
+new.y <- data.frame(
+  soil_water = seq(min(ind_data_2024$soil_water), max(ind_data_2024$soil_water), length.out = 100)
+)
+new.y$fit <- predict(glm_soil_water, newdata = new.y, type = "response")
+ci <- predict(glm_soil_water, newdata = new.y, type = "link", se.fit = TRUE)
+new.y$lower <- plogis(ci$fit - 1.96 * ci$se.fit)
+new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
-plot <- ggplot(data = ind_data_2024,
-               aes_string(y = "prop.flower", x = "soil_water")) +
-  geom_point(colour = "black",
+plot <- ggplot() +
+  geom_point(data = ind_data_2024,
+             aes(x = soil_water, y = nb.flower / nb.stem),
+             colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_line(aes(x = soil_water, y = point.estimate),
-            data = new.y,
+  geom_line(data = new.y,
+            aes(x = soil_water, y = fit), 
             colour = "darkgreen",
             linewidth = 1) + 
-  geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA,
+  geom_ribbon(data = new.y,
+              aes(x = soil_water, ymin = lower, ymax = upper), 
               fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
+              alpha = 0.35) +
   labs(x = "Bodenfeuchte [%]",
        y = "Anteil blühender Sprosse [%]") +
-  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
@@ -614,38 +534,36 @@ ggsave(filename = "Plots/regline_prop.flower~soil_water_2024.png", plot = plot, 
 **Blüherfolg \~ Deckung Krautschicht**
 
 ```{r}
-lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$HL_cover)
-new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.HL_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         lower = invlogit(fit - 1.96*se.fit), 
-         point.estimate = invlogit(fit), 
-         upper = invlogit(fit + 1.96*se.fit)) 
+glm_HL_cover <- glm(cbind(nb.flower, nb.stem) ~ HL_cover, 
+                      family = binomial,
+                      data = ind_data_2024)
+
+new.y <- data.frame(
+  HL_cover = seq(min(ind_data_2024$HL_cover), max(ind_data_2024$HL_cover), length.out = 100)
+)
+new.y$fit <- predict(glm_HL_cover, newdata = new.y, type = "response")
+ci <- predict(glm_HL_cover, newdata = new.y, type = "link", se.fit = TRUE)
+new.y$lower <- plogis(ci$fit - 1.96 * ci$se.fit)
+new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
-plot <- ggplot(data = ind_data_2024,
-               aes_string(y = "prop.flower", x = "HL_cover")) +
-  geom_point(colour = "black",
+plot <- ggplot() +
+  geom_point(data = ind_data_2024,
+             aes(x = HL_cover, y = nb.flower / nb.stem),
+             colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_line(aes(x = HL_cover, y = point.estimate),
-            data = new.y,
+  geom_line(data = new.y,
+            aes(x = HL_cover, y = fit), 
             colour = "darkgreen",
             linewidth = 1) + 
-  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA,
+  geom_ribbon(data = new.y,
+              aes(x = HL_cover, ymin = lower, ymax = upper), 
               fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
+              alpha = 0.35) +
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
-  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
@@ -1114,7 +1032,7 @@ file.rename("Model.result.tables_2024.xlsx", "Result Tables/Model.result.tables_
 
 <br>
 
-# **4. Ökologische Modellierung 2019 + 2024**
+# **3. Ökologische Modellierung 2019 + 2024**
 
 <br>
 
@@ -1260,40 +1178,36 @@ check_model(model_final)
 **Blüherfolg \~ Bodentiefe**
 
 ```{r}
-glm.soil_depth <- glm(car::logit(prop.flower, adjust = 0.0001) ~ soil_depth, data = ind_data_merged)
-range.x <- range(ind_data_merged$soil_depth)
-new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(glm.soil_depth,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1), 
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
+glm_soil_depth <- glm(cbind(nb.flower, nb.stem) ~ soil_depth, 
+                      family = binomial,
+                      data = ind_data_merged)
+
+new.y <- data.frame(
+  soil_depth = seq(min(ind_data_merged$soil_depth), max(ind_data_merged$soil_depth), length.out = 100)
+)
+new.y$fit <- predict(glm_soil_depth, newdata = new.y, type = "response")
+ci <- predict(glm_soil_depth, newdata = new.y, type = "link", se.fit = TRUE)
+new.y$lower <- plogis(ci$fit - 1.96 * ci$se.fit)
+new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
-plot <- ggplot(data = ind_data_merged,
-               aes_string(y = "prop.flower", x = "soil_depth")) +
-  geom_point(colour = "black",
+plot <- ggplot() +
+  geom_point(data = ind_data_merged,
+             aes(x = soil_depth, y = nb.flower / nb.stem),
+             colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_line(aes(x = soil_depth, y = point.estimate),
-            data = new.y,
+  geom_line(data = new.y,
+            aes(x = soil_depth, y = fit), 
             colour = "darkgreen",
             linewidth = 1) + 
-  geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA,
+  geom_ribbon(data = new.y,
+              aes(x = soil_depth, ymin = lower, ymax = upper), 
               fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
+              alpha = 0.35) +
   labs(x = "Bodentiefe [cm]",
        y = "Anteil blühender Sprosse [%]") +
-  scale_y_continuous(
-    breaks = seq(0, 100, 25),  # Specify the breaks
-    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
@@ -1309,41 +1223,36 @@ ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged.png", plot = plot
 **Blüherfolg \~ Deckung Krautschicht**
 
 ```{r}
-lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
-range.x <- range(ind_data_merged$HL_cover)
-new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(lm.HL_cover,
-                 newdata = new.x,
-                 se.fit = TRUE) %>% 
-  as.data.frame() %>% 
-  mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
-         lower = invlogit(fit - 1.96*se.fit), 
-         point.estimate = invlogit(fit), 
-         upper = invlogit(fit + 1.96*se.fit)) 
+glm_HL_cover <- glm(cbind(nb.flower, nb.stem) ~ HL_cover, 
+                      family = binomial,
+                      data = ind_data_merged)
+
+new.y <- data.frame(
+  HL_cover = seq(min(ind_data_merged$HL_cover), max(ind_data_merged$HL_cover), length.out = 100)
+)
+new.y$fit <- predict(glm_HL_cover, newdata = new.y, type = "response")
+ci <- predict(glm_HL_cover, newdata = new.y, type = "link", se.fit = TRUE)
+new.y$lower <- plogis(ci$fit - 1.96 * ci$se.fit)
+new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
-
-plot <- ggplot(data = ind_data_merged,
-               aes_string(y = "prop.flower", x = "HL_cover")) +
-  geom_point(colour = "black",
+plot <- ggplot() +
+  geom_point(data = ind_data_merged,
+             aes(x = HL_cover, y = nb.flower /  nb.stem),
+             colour = "black",
              alpha = 0.25,
              shape = 16,
              size = 0.6) +
-  geom_line(aes(x = HL_cover, y = point.estimate),
-            data = new.y,
+  geom_line(data = new.y,
+            aes(x = HL_cover, y = fit), 
             colour = "darkgreen",
             linewidth = 1) + 
-  geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
-              data = new.y,
-              color = NA,
+  geom_ribbon(data = new.y,
+              aes(x = HL_cover, ymin = lower, ymax = upper), 
               fill = "green",
-              alpha = 0.35,
-              inherit.aes = FALSE) + 
+              alpha = 0.35) +
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
-  scale_y_continuous(
-    breaks = seq(0, 100, 25),  # Specify the breaks
-    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
