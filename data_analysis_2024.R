@@ -305,6 +305,25 @@ result.tab
 #leaf.area     #done
 
 
+
+#___________________________________________________________________________________
+#### Correlation table ####
+subsetcorr <- subset(ind_data_2024, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh.90, l.leaves, w.leaves))
+#add leaf area
+subsetcorr <- subsetcorr %>%
+  mutate(leaf.area = w.leaves * l.leaves)
+#make matrix
+cormatrix <- cor(subsetcorr)
+corpvalues <- cor.mtest(subsetcorr)
+#matrix with numbers
+png("Plots/corrmatrix_numbers_2024.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="number")
+dev.off()
+#matrix with circles
+png("Plots/corrmatrix_circle_2024.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
+dev.off()
+
 #___________________________________________________________________________________
 #### Correlation table ####
 
@@ -563,12 +582,13 @@ new.y <- predict(lm.soil_water,
   mutate(soil_water = seq(from = range.x[1], to = range.x[2], 0.1), 
          # model object mod1 has a component called linkinv that 
          # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit)) 
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
 
 
-plot <- ggplot(ind_data_2024, aes(x = soil_water, y = prop.flower)) +
+plot <- ggplot(data = ind_data_2024,
+               aes_string(y = "prop.flower", x = "soil_water")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -578,16 +598,20 @@ plot <- ggplot(ind_data_2024, aes(x = soil_water, y = prop.flower)) +
             colour = "darkgreen") + 
   geom_ribbon(aes(x = soil_water, ymin = lower, ymax = upper),
               data = new.y,
-              color = NA, fill = "green",
+              color = NA,
+              fill = "green",
               alpha = 0.35,
               inherit.aes = FALSE) + 
   labs(x = "Bodenfeuchte [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+
 
 # save file
 ggsave(filename = "Plots/regline_prop.flower~soil_water_2024_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
@@ -608,11 +632,13 @@ new.y <- predict(lm.HL_cover,
   mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
          # model object mod1 has a component called linkinv that 
          # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
 
-plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = prop.flower)) +
+
+plot <- ggplot(data = ind_data_2024,
+               aes_string(y = "prop.flower", x = "HL_cover")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -622,16 +648,20 @@ plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = prop.flower)) +
             colour = "darkgreen") + 
   geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
               data = new.y,
-              color = NA, fill = "green",
+              color = NA,
+              fill = "green",
               alpha = 0.35,
               inherit.aes = FALSE) + 
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+
 
 # save file
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_2024_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
@@ -1078,6 +1108,22 @@ corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
 dev.off()
 
 
+#___________________________________________________________________________________
+#### Correlation table ####
+str(ind_data_merged)
+subsetcorr <- subset(ind_data_merged, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))
+#make matrix
+cormatrix <- cor(subsetcorr)
+corpvalues <- cor.mtest(subsetcorr)
+#matrix with numbers
+png("Plots/corrmatrix_numbers_merged.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="number")
+dev.off()
+#matrix with circles
+png("Plots/corrmatrix_circle_merged.png", width = 25, height = 25, units = "cm", res = 300)
+corrplot(cormatrix, p.mat=corpvalues$p, type="upper", method="circle")
+dev.off()
+
 
 #___________________________________________________________________________________
 #### Model - Stem Count Per Patch (nb.stem) ####
@@ -1166,7 +1212,8 @@ new.y <- predict(glm.soil_depth,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = prop.flower)) +
+plot <- ggplot(data = ind_data_merged,
+               aes_string(y = "prop.flower", x = "soil_depth")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1176,16 +1223,22 @@ plot <- ggplot(ind_data_merged, aes(x = soil_depth, y = prop.flower)) +
             colour = "darkgreen") + 
   geom_ribbon(aes(x = soil_depth, ymin = lower, ymax = upper),
               data = new.y,
-              color = NA, fill = "green",
+              color = NA,
+              fill = "green",
               alpha = 0.35,
               inherit.aes = FALSE) + 
   labs(x = "Bodentiefe [cm]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(
+    breaks = seq(0, 100, 25),  # Specify the breaks
+    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+
 
 # save file
 ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
@@ -1195,23 +1248,25 @@ ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged_alternative.png",
 #___________________________________________________________________________________
 #### > Plotting - prop.flower ~ HL_cover ####
 
-glm.HL_cover <- glm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
+lm.HL_cover <- lm(car::logit(prop.flower, adjust = 0.0001) ~ HL_cover, data = ind_data_merged)
 range.x <- range(ind_data_merged$HL_cover)
 # df with predictions, lower and upper limits of CIs: 
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
-new.y <- predict(glm.HL_cover,
+new.y <- predict(lm.HL_cover,
                  newdata = new.x,
                  se.fit = TRUE) %>% 
   as.data.frame() %>% 
   mutate(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1), 
          # model object mod1 has a component called linkinv that 
          # is a function that inverts the link function of the GLM:
-         lower = (fit - 1.96*se.fit), 
-         point.estimate = (fit), 
-         upper = (fit + 1.96*se.fit))
+         lower = invlogit(fit - 1.96*se.fit), 
+         point.estimate = invlogit(fit), 
+         upper = invlogit(fit + 1.96*se.fit)) 
 
 
-plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = prop.flower)) +
+
+plot <- ggplot(data = ind_data_merged,
+               aes_string(y = "prop.flower", x = "HL_cover")) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1221,16 +1276,22 @@ plot <- ggplot(ind_data_merged, aes(x = HL_cover, y = prop.flower)) +
             colour = "darkgreen") + 
   geom_ribbon(aes(x = HL_cover, ymin = lower, ymax = upper),
               data = new.y,
-              color = NA, fill = "green",
+              color = NA,
+              fill = "green",
               alpha = 0.35,
               inherit.aes = FALSE) + 
   labs(x = "Deckung Krautschicht [%]",
        y = "Anteil blühender Sprosse [%]") +
+  scale_y_continuous(
+    breaks = seq(0, 100, 25),  # Specify the breaks
+    labels = seq(0, 100, 25)) +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
+        plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
         legend.position = "none")
 
 plot
+
 
 # save file
 ggsave(filename = "Plots/regline_prop.flower~HL_cover_merged_alternative.png", plot = plot, width = 7.4, height = 7.4, units = "cm")
