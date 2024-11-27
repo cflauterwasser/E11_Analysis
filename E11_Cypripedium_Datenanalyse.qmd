@@ -1390,7 +1390,7 @@ check_model(model_final)
 
 ### Visualisierungen
 
-**Deckung Krautschicht \~ Deckung Strauchschicht**
+**Deckung Krautschicht \~ Hangneigung**
 
 ```{r}
 lm.slope <- lm(HL_cover ~ slope, data = data_merged)
@@ -1420,7 +1420,7 @@ plot <- ggplot(data_merged, aes(x = slope, y = HL_cover)) +
               color = NA, fill = "green",
               alpha = 0.35,
               inherit.aes = FALSE) + 
-  labs(x = "Deckung Strauchschicht [%]",
+  labs(x = "Hangneigung [°]",
        y = "Deckung Krautschicht [%]") +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
