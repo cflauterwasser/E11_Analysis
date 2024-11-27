@@ -193,7 +193,7 @@ write_model_table <- function(model.result = NULL, file.name = NULL) {
 
 # make some boxplots
 # read in the data
-ind_data <- read.xlsx("individuals_data.xlsx", sheet = 1)
+ind_data <- read.xlsx("data_2019.xlsx", sheet = 1)
 str(ind_data)
 
 

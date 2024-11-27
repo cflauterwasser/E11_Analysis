@@ -145,12 +145,12 @@ write_model_table <- function(model.result = NULL, file.name = NULL) {
 #### Importing Data ####
 
 # 2024
-ind_data_2024 <- read.xlsx("datalike2019.xlsx", sheet = 1)
-str(ind_data_2024)
+data_2024 <- read.xlsx("data_2024.xlsx", sheet = 1)
+str(data_2024)
 
 # 2019
-ind_data_2019 <- read.xlsx("individuals_data.xlsx", sheet = 1)
-str(ind_data_2019)
+data_2019 <- read.xlsx("data_2019.xlsx", sheet = 1)
+str(data_2019)
 
 
 
@@ -158,30 +158,30 @@ str(ind_data_2019)
 #### Data Preparation ####
 
 
-ind_data_2024 <- ind_data_2024 |> 
+data_2024 <- data_2024 |> 
   mutate(leaf.area = l.leaves*w.leaves)
 
 
-ind_data_2024$management2 <- factor(ind_data_2024$management2,
+data_2024$management2 <- factor(data_2024$management2,
                                     levels = c("Wald", "Hang", "Buche", "Fichte"),
                                     labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
 
 
-ind_data_2019$management2 <- factor(ind_data_2019$management2,
+data_2019$management2 <- factor(data_2019$management2,
                                levels = c("CC", "5yr", "beech_forest", "spruce_forest"),
                                labels = c("Kiefer (n. entb.)", "Kiefer (entb.)", "Buche", "Fichte"))
 
-ind_data_2019 <- ind_data_2019 %>%
+data_2019 <- data_2019 %>%
   mutate(soil_water = rowMeans(select(., soil_water1, soil_water2)))
 
 
 # area.bunch from cm² to m²
-ind_data_2024$area.bunch <- ind_data_2024$area.bunch / 10000
-ind_data_2019$area.bunch <- ind_data_2019$area.bunch / 10000
+data_2024$area.bunch <- data_2024$area.bunch / 10000
+data_2019$area.bunch <- data_2019$area.bunch / 10000
 
 
-parameters <- colnames(ind_data_2024[, c(6:13, 15:27)])
+parameters <- colnames(data_2024[, c(6:13, 15:27)])
 var.names <- c("Sprossanzahl pro Horst",
                "Sprossanzahl pro m² Horstgröße",
                "Horstgröße [m²]",
@@ -230,7 +230,7 @@ vars <- data.frame(parameters, var.names)
 #___________________________________________________________________________________
 #### Correlation table ####
 
-subsetcorr <- subset(ind_data_2024, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh.90, l.leaves, w.leaves))
+subsetcorr <- subset(data_2024, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh.90, l.leaves, w.leaves))
 #add leaf area
 subsetcorr <- subsetcorr %>%
   mutate(leaf.area = w.leaves * l.leaves)
@@ -250,11 +250,11 @@ dev.off()
 #### Model - Stem Count Per Patch (nb.stem) ####
 
 # nb.stem = Sprossanzahl pro Horst
-#lm1 <- glm(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = poisson)
+#lm1 <- glm(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024, family = poisson)
 #summary(lm1)
 
 # besser glm.nb (edit 2024: hier auch!)
-glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 summary(glm1)
 
 glm2 <- stepAIC(glm1)
@@ -284,7 +284,7 @@ check_model(model_final)
 #### > Plotting - nb.stem ~ all sign env vars ####
 
 #recycled slightly edited function from 2019 analysis for non-linear regression
-pplot_reg.lines.single.plots(model_final, ind_data_2024, 2024)
+pplot_reg.lines.single.plots(model_final, data_2024, 2024)
 
 
 
@@ -293,7 +293,7 @@ pplot_reg.lines.single.plots(model_final, ind_data_2024, 2024)
 
 # area.bunch = Horstgröße [m²]
 
-lm1 <- lm(log(area.bunch) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+lm1 <- lm(log(area.bunch) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 #plot(lm2)
 summary(lm1)
 
@@ -327,8 +327,8 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - log(area.bunch) ~ soil_depth ####
 
-lm.soil_depth <- lm(log(area.bunch) ~ soil_depth, data = ind_data_2024)
-range.x <- range(ind_data_2024$soil_depth)
+lm.soil_depth <- lm(log(area.bunch) ~ soil_depth, data = data_2024)
+range.x <- range(data_2024$soil_depth)
 new.x <- data.frame(soil_depth = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_depth,
                  newdata = new.x,
@@ -340,7 +340,7 @@ new.y <- predict(lm.soil_depth,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = soil_depth, y = log(area.bunch))) +
+plot <- ggplot(data_2024, aes(x = soil_depth, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -370,8 +370,8 @@ ggsave(filename = "Plots/regline_log(area.bunch)~soil_depth_2024_alternative.png
 #___________________________________________________________________________________
 #### > Plotting - log(area.bunch) ~ HL_cover ####
 
-lm.HL_cover <- lm(log(area.bunch) ~ HL_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$HL_cover)
+lm.HL_cover <- lm(log(area.bunch) ~ HL_cover, data = data_2024)
+range.x <- range(data_2024$HL_cover)
 new.x <- data.frame(HL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.HL_cover,
                  newdata = new.x,
@@ -383,7 +383,7 @@ new.y <- predict(lm.HL_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = HL_cover, y = log(area.bunch))) +
+plot <- ggplot(data_2024, aes(x = HL_cover, y = log(area.bunch))) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -414,8 +414,8 @@ ggsave(filename = "Plots/regline_log(area.bunch)~HL_cover_2024_alternative.png",
 #### Model - Proportion Flowering (prop.flower) ####
 
 # prop.flower = Anteil blühender Sprosse [%]
-ind_data_2024$prop.flower <- ind_data_2024$prop.flower / 100
-lm1 <- lm(car::logit(prop.flower, adjust = 0.0001) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+data_2024$prop.flower <- data_2024$prop.flower / 100
+lm1 <- lm(car::logit(prop.flower, adjust = 0.0001) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 
 #plot(lm1)
 summary(lm1)
@@ -441,7 +441,7 @@ check_model(model_final) # difficult
 #### Model - Proportion Flowering - Markus' Alternative (cbind(nb.flower, nb.stem)) ####
 
 # edit 2024: Alternative von Markus
-glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024, family = binomial)
+glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024, family = binomial)
 
 summary(glm1)
 
@@ -473,10 +473,10 @@ check_model(model_final) # difficult
 
 glm_soil_water <- glm(cbind(nb.flower, nb.stem) ~ soil_water, 
                       family = binomial,
-                      data = ind_data_2024)
+                      data = data_2024)
 
 new.y <- data.frame(
-  soil_water = seq(min(ind_data_2024$soil_water), max(ind_data_2024$soil_water), length.out = 100)
+  soil_water = seq(min(data_2024$soil_water), max(data_2024$soil_water), length.out = 100)
 )
 new.y$fit <- predict(glm_soil_water, newdata = new.y, type = "response")
 ci <- predict(glm_soil_water, newdata = new.y, type = "link", se.fit = TRUE)
@@ -485,7 +485,7 @@ new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
 plot <- ggplot() +
-  geom_point(data = ind_data_2024,
+  geom_point(data = data_2024,
              aes(x = soil_water, y = nb.flower / nb.stem),
              colour = "black",
              alpha = 0.25,
@@ -520,10 +520,10 @@ ggsave(filename = "Plots/regline_prop.flower~soil_water_2024_alternative.png", p
 
 glm_HL_cover <- glm(cbind(nb.flower, nb.stem) ~ HL_cover, 
                       family = binomial,
-                      data = ind_data_2024)
+                      data = data_2024)
 
 new.y <- data.frame(
-  HL_cover = seq(min(ind_data_2024$HL_cover), max(ind_data_2024$HL_cover), length.out = 100)
+  HL_cover = seq(min(data_2024$HL_cover), max(data_2024$HL_cover), length.out = 100)
 )
 new.y$fit <- predict(glm_HL_cover, newdata = new.y, type = "response")
 ci <- predict(glm_HL_cover, newdata = new.y, type = "link", se.fit = TRUE)
@@ -532,7 +532,7 @@ new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
 plot <- ggplot() +
-  geom_point(data = ind_data_2024,
+  geom_point(data = data_2024,
              aes(x = HL_cover, y = nb.flower / nb.stem),
              colour = "black",
              alpha = 0.25,
@@ -566,7 +566,7 @@ ggsave(filename = "Plots/regline_prop.flower~HL_cover_2024_alternative.png", plo
 
 # stem.height = Sprosshöhe [cm]
 
-lm1 <- lm(log(stem.height) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+lm1 <- lm(log(stem.height) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 
 #plot(lm1)
 summary(lm1)
@@ -641,7 +641,7 @@ check_model(model_final)
 
 # new 2024
 
-lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 summary(lm1)
 
 lm2 <- stepAIC(lm1)
@@ -672,8 +672,8 @@ check_model(model_final)
 #___________________________________________________________________________________
   #### > Plotting - stem.per.sqm ~ vh.90 ####
 
-lm.vh.90 <- lm(stem.per.sqm ~ vh.90, data = ind_data_2024)
-range.x <- range(ind_data_2024$vh.90)
+lm.vh.90 <- lm(stem.per.sqm ~ vh.90, data = data_2024)
+range.x <- range(data_2024$vh.90)
 new.x <- data.frame(vh.90 = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.vh.90,
                  newdata = new.x,
@@ -685,7 +685,7 @@ new.y <- predict(lm.vh.90,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = vh.90, y = stem.per.sqm)) +
+plot <- ggplot(data_2024, aes(x = vh.90, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -717,7 +717,7 @@ ggsave(filename = "Plots/regline_stem.per.sqm~vh.90_2024_alternative.png", plot 
 
 # new 2024
 
-lm1 <- lm(leaf.area ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+lm1 <- lm(leaf.area ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 summary(lm1)
 
 lm2 <- stepAIC(lm1)
@@ -744,8 +744,8 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - leaf.area ~ soil_cover ####
 
-lm.soil_cover <- lm(leaf.area ~ soil_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$soil_cover)
+lm.soil_cover <- lm(leaf.area ~ soil_cover, data = data_2024)
+range.x <- range(data_2024$soil_cover)
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
@@ -757,7 +757,7 @@ new.y <- predict(lm.soil_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = leaf.area)) +
+plot <- ggplot(data_2024, aes(x = soil_cover, y = leaf.area)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -791,7 +791,7 @@ ggsave(filename = "Plots/regline_leaf.area~soil_cover_2024_alternative.png", plo
 
 # herb layer correlated with lot of Cypripedium fitness traits, here deeper investigation of correlation of HL with other env variables
 
-lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = ind_data_2024)
+lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + TL_cover + soil_cover + moss_cover + vh.max + vh.90, data = data_2024)
 summary(lm1)
 
 lm2 <- stepAIC(lm1)
@@ -818,8 +818,8 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ SL_cover ####
 
-lm.SL_cover <- lm(HL_cover ~ SL_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$SL_cover)
+lm.SL_cover <- lm(HL_cover ~ SL_cover, data = data_2024)
+range.x <- range(data_2024$SL_cover)
 new.x <- data.frame(SL_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.SL_cover,
                  newdata = new.x,
@@ -831,7 +831,7 @@ new.y <- predict(lm.SL_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = SL_cover, y = HL_cover)) +
+plot <- ggplot(data_2024, aes(x = SL_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -861,8 +861,8 @@ ggsave(filename = "Plots/regline_HL_cover~SL_cover_2024_alternative.png", plot =
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ soil_cover ####
 
-lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$soil_cover)
+lm.soil_cover <- lm(HL_cover ~ soil_cover, data = data_2024)
+range.x <- range(data_2024$soil_cover)
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
@@ -874,7 +874,7 @@ new.y <- predict(lm.soil_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = soil_cover, y = HL_cover)) +
+plot <- ggplot(data_2024, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -904,8 +904,8 @@ ggsave(filename = "Plots/regline_HL_cover~soil_cover_2024_alternative.png", plot
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ moss_cover ####
 
-lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_2024)
-range.x <- range(ind_data_2024$moss_cover)
+lm.moss_cover <- lm(HL_cover ~ moss_cover, data = data_2024)
+range.x <- range(data_2024$moss_cover)
 new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.moss_cover,
                  newdata = new.x,
@@ -917,7 +917,7 @@ new.y <- predict(lm.moss_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_2024, aes(x = moss_cover, y = HL_cover)) +
+plot <- ggplot(data_2024, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -959,27 +959,27 @@ file.rename("Model.result.tables_2024.xlsx", "Result Tables/Model.result.tables_
 #### Merging 2019 + 2024 ####
 
 
-ind_data_2024$year <- 2024
-ind_data_2019$year <- 2019
+data_2024$year <- 2024
+data_2019$year <- 2019
 
-common_columns <- intersect(names(ind_data_2024), names(ind_data_2019))
+common_columns <- intersect(names(data_2024), names(data_2019))
 
-ind_data_2024_common <- ind_data_2024[, c(common_columns, "year")]
-ind_data_2019_common <- ind_data_2019[, c(common_columns, "year")]
+data_2024_common <- data_2024[, c(common_columns, "year")]
+data_2019_common <- data_2019[, c(common_columns, "year")]
 
-names(ind_data_2024_common) <- common_columns
-names(ind_data_2019_common) <- common_columns
+names(data_2024_common) <- common_columns
+names(data_2019_common) <- common_columns
 
-ind_data_merged <- rbind(ind_data_2024_common, ind_data_2019_common)
+data_merged <- rbind(data_2024_common, data_2019_common)
 
-ind_data_merged
+data_merged
 
 
 
 #___________________________________________________________________________________
 #### Correlation table ####
-str(ind_data_merged)
-subsetcorr <- subset(ind_data_merged, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))
+str(data_merged)
+subsetcorr <- subset(data_merged, select=c(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))
 #make matrix
 cormatrix <- cor(subsetcorr)
 corpvalues <- cor.mtest(subsetcorr)
@@ -997,7 +997,7 @@ dev.off()
 #### Model - Stem Count Per Patch (nb.stem) ####
 
 # besser glm.nb
-glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
+glm1 <- glm.nb(nb.stem ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = data_merged)
 summary(glm1)
 
 glm2 <- stepAIC(glm1)
@@ -1024,7 +1024,7 @@ check_model(model_final)
 #### > Plotting - nb.stem ~ all sign env vars ####
 
 #recycled slightly edited function from 2019 analysis for non-linear regression
-pplot_reg.lines.single.plots(model_final, ind_data_merged, "merged")
+pplot_reg.lines.single.plots(model_final, data_merged, "merged")
 
 
 
@@ -1032,7 +1032,7 @@ pplot_reg.lines.single.plots(model_final, ind_data_merged, "merged")
 #### Model - Proportion Flowering ####
 
 # edit 2024: Alternative von Markus
-glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged, family = binomial)
+glm1 <- glm(cbind(nb.flower, nb.stem) ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = data_merged, family = binomial)
 
 summary(glm1)
 
@@ -1066,10 +1066,10 @@ check_model(model_final)
 
 glm_soil_depth <- glm(cbind(nb.flower, nb.stem) ~ soil_depth, 
                       family = binomial,
-                      data = ind_data_merged)
+                      data = data_merged)
 
 new.y <- data.frame(
-  soil_depth = seq(min(ind_data_merged$soil_depth), max(ind_data_merged$soil_depth), length.out = 100)
+  soil_depth = seq(min(data_merged$soil_depth), max(data_merged$soil_depth), length.out = 100)
 )
 new.y$fit <- predict(glm_soil_depth, newdata = new.y, type = "response")
 ci <- predict(glm_soil_depth, newdata = new.y, type = "link", se.fit = TRUE)
@@ -1078,7 +1078,7 @@ new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
 plot <- ggplot() +
-  geom_point(data = ind_data_merged,
+  geom_point(data = data_merged,
              aes(x = soil_depth, y = nb.flower / nb.stem),
              colour = "black",
              alpha = 0.25,
@@ -1112,10 +1112,10 @@ ggsave(filename = "Plots/regline_prop.flower~soil_depth_merged_alternative.png",
 
 glm_HL_cover <- glm(cbind(nb.flower, nb.stem) ~ HL_cover, 
                       family = binomial,
-                      data = ind_data_merged)
+                      data = data_merged)
 
 new.y <- data.frame(
-  HL_cover = seq(min(ind_data_merged$HL_cover), max(ind_data_merged$HL_cover), length.out = 100)
+  HL_cover = seq(min(data_merged$HL_cover), max(data_merged$HL_cover), length.out = 100)
 )
 new.y$fit <- predict(glm_HL_cover, newdata = new.y, type = "response")
 ci <- predict(glm_HL_cover, newdata = new.y, type = "link", se.fit = TRUE)
@@ -1124,7 +1124,7 @@ new.y$upper <- plogis(ci$fit + 1.96 * ci$se.fit)
 
 
 plot <- ggplot() +
-  geom_point(data = ind_data_merged,
+  geom_point(data = data_merged,
              aes(x = HL_cover, y = nb.flower /  nb.stem),
              colour = "black",
              alpha = 0.25,
@@ -1158,7 +1158,7 @@ ggsave(filename = "Plots/regline_prop.flower~HL_cover_merged_alternative.png", p
 
 # new 2024
 
-lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
+lm1 <- lm(stem.per.sqm ~ management2 + exposition + slope + soil_depth + soil_water + PAR + HL_cover + SL_cover + soil_cover + moss_cover, data = data_merged)
 summary(lm1)
 
 lm2 <- stepAIC(lm1)
@@ -1185,8 +1185,8 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - stem.per.sqm ~ soil_water ####
 
-lm.soil_water <- lm(stem.per.sqm ~ soil_water, data = ind_data_merged)
-range.x <- range(ind_data_merged$soil_water)
+lm.soil_water <- lm(stem.per.sqm ~ soil_water, data = data_merged)
+range.x <- range(data_merged$soil_water)
 new.x <- data.frame(soil_water = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_water,
                  newdata = new.x,
@@ -1198,7 +1198,7 @@ new.y <- predict(lm.soil_water,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = soil_water, y = stem.per.sqm)) +
+plot <- ggplot(data_merged, aes(x = soil_water, y = stem.per.sqm)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1230,7 +1230,7 @@ ggsave(filename = "Plots/regline_stem.per.sqm~soil_water_merged_alternative.png"
 
 # herb layer correlated with lot of Cypripedium fitness traits, here deeper investigation of correlation of HL with other env variables
 
-lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + soil_cover + moss_cover, data = ind_data_merged)
+lm1 <- lm(HL_cover ~ management2 + exposition + slope + soil_depth + soil_water + PAR + SL_cover + soil_cover + moss_cover, data = data_merged)
 summary(lm1)
 
 lm2 <- stepAIC(lm1)
@@ -1253,8 +1253,8 @@ check_model(model_final)
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ slope ####
 
-lm.slope <- lm(HL_cover ~ slope, data = ind_data_merged)
-range.x <- range(ind_data_merged$slope)
+lm.slope <- lm(HL_cover ~ slope, data = data_merged)
+range.x <- range(data_merged$slope)
 new.x <- data.frame(slope = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.slope,
                  newdata = new.x,
@@ -1266,7 +1266,7 @@ new.y <- predict(lm.slope,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = slope, y = HL_cover)) +
+plot <- ggplot(data_merged, aes(x = slope, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1296,8 +1296,8 @@ ggsave(filename = "Plots/regline_HL_cover~slope_merged_alternative.png", plot = 
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ PAR ####
 
-lm.PAR <- lm(HL_cover ~ PAR, data = ind_data_merged)
-range.x <- range(ind_data_merged$PAR)
+lm.PAR <- lm(HL_cover ~ PAR, data = data_merged)
+range.x <- range(data_merged$PAR)
 new.x <- data.frame(PAR = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.PAR,
                  newdata = new.x,
@@ -1309,7 +1309,7 @@ new.y <- predict(lm.PAR,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = PAR, y = HL_cover)) +
+plot <- ggplot(data_merged, aes(x = PAR, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1339,8 +1339,8 @@ ggsave(filename = "Plots/regline_HL_cover~PAR_merged_alternative.png", plot = pl
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ soil_cover ####
 
-lm.soil_cover <- lm(HL_cover ~ soil_cover, data = ind_data_merged)
-range.x <- range(ind_data_merged$soil_cover)
+lm.soil_cover <- lm(HL_cover ~ soil_cover, data = data_merged)
+range.x <- range(data_merged$soil_cover)
 new.x <- data.frame(soil_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.soil_cover,
                  newdata = new.x,
@@ -1352,7 +1352,7 @@ new.y <- predict(lm.soil_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = soil_cover, y = HL_cover)) +
+plot <- ggplot(data_merged, aes(x = soil_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,
@@ -1382,8 +1382,8 @@ ggsave(filename = "Plots/regline_HL_cover~soil_cover_merged_alternative.png", pl
 #___________________________________________________________________________________
 #### > Plotting - HL_cover ~ moss_cover ####
 
-lm.moss_cover <- lm(HL_cover ~ moss_cover, data = ind_data_merged)
-range.x <- range(ind_data_merged$moss_cover)
+lm.moss_cover <- lm(HL_cover ~ moss_cover, data = data_merged)
+range.x <- range(data_merged$moss_cover)
 new.x <- data.frame(moss_cover = seq(from = range.x[1], to = range.x[2], 0.1))
 new.y <- predict(lm.moss_cover,
                  newdata = new.x,
@@ -1395,7 +1395,7 @@ new.y <- predict(lm.moss_cover,
          upper = (fit + 1.96*se.fit))
 
 
-plot <- ggplot(ind_data_merged, aes(x = moss_cover, y = HL_cover)) +
+plot <- ggplot(data_merged, aes(x = moss_cover, y = HL_cover)) +
   geom_point(colour = "black",
              alpha = 0.25,
              shape = 16,

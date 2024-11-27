@@ -305,9 +305,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="einlesen-der-daten-von-2019-und-2024" class="level2">
 <h2 class="anchored" data-anchor-id="einlesen-der-daten-von-2019-und-2024">Einlesen der Daten von 2019 und 2024</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2024</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ind_data_2024 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(<span class="st">"datalike2019.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ind_data_2024)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_2024 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(<span class="st">"data_2024.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data_2024)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   80 obs. of  26 variables:
  $ Labnumber   : num  1 2 3 4 5 6 7 8 9 10 ...
@@ -337,9 +336,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  $ vh.max      : num  43 45 77 27 40 50 52 48 46 40 ...
  $ vh.90       : num  15 16 21 12 20 20 10 25 21 15 ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2019</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ind_data_2019 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(<span class="st">"individuals_data.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ind_data_2019)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data_2019 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(<span class="st">"data_2019.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data_2019)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   91 obs. of  27 variables:
  $ Labnumber   : num  60 57 59 56 53 58 55 54 51 52 ...
@@ -376,31 +374,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="vorbereitung-der-daten" class="level2">
 <h2 class="anchored" data-anchor-id="vorbereitung-der-daten">Vorbereitung der Daten</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ind_data_2024 <span class="ot">&lt;-</span> ind_data_2024 <span class="sc">|&gt;</span> </span>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_2024 <span class="ot">&lt;-</span> data_2024 <span class="sc">|&gt;</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">leaf.area =</span> l.leaves<span class="sc">*</span>w.leaves)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>ind_data_2024<span class="sc">$</span>management2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(ind_data_2024<span class="sc">$</span>management2,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>data_2024<span class="sc">$</span>management2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(data_2024<span class="sc">$</span>management2,</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Wald"</span>, <span class="st">"Hang"</span>, <span class="st">"Buche"</span>, <span class="st">"Fichte"</span>),</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Kiefer (n. entb.)"</span>, <span class="st">"Kiefer (entb.)"</span>, <span class="st">"Buche"</span>, <span class="st">"Fichte"</span>))</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>ind_data_2019<span class="sc">$</span>management2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(ind_data_2019<span class="sc">$</span>management2,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>data_2019<span class="sc">$</span>management2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(data_2019<span class="sc">$</span>management2,</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                               <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"CC"</span>, <span class="st">"5yr"</span>, <span class="st">"beech_forest"</span>, <span class="st">"spruce_forest"</span>),</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                               <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Kiefer (n. entb.)"</span>, <span class="st">"Kiefer (entb.)"</span>, <span class="st">"Buche"</span>, <span class="st">"Fichte"</span>))</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>ind_data_2019 <span class="ot">&lt;-</span> ind_data_2019 <span class="sc">%&gt;%</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>data_2019 <span class="ot">&lt;-</span> data_2019 <span class="sc">%&gt;%</span></span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">soil_water =</span> <span class="fu">rowMeans</span>(<span class="fu">select</span>(., soil_water1, soil_water2)))</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># area.bunch from cm² to m²</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>ind_data_2024<span class="sc">$</span>area.bunch <span class="ot">&lt;-</span> ind_data_2024<span class="sc">$</span>area.bunch <span class="sc">/</span> <span class="dv">10000</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>ind_data_2019<span class="sc">$</span>area.bunch <span class="ot">&lt;-</span> ind_data_2019<span class="sc">$</span>area.bunch <span class="sc">/</span> <span class="dv">10000</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>data_2024<span class="sc">$</span>area.bunch <span class="ot">&lt;-</span> data_2024<span class="sc">$</span>area.bunch <span class="sc">/</span> <span class="dv">10000</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>data_2019<span class="sc">$</span>area.bunch <span class="ot">&lt;-</span> data_2019<span class="sc">$</span>area.bunch <span class="sc">/</span> <span class="dv">10000</span></span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">colnames</span>(ind_data_2024[, <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">15</span><span class="sc">:</span><span class="dv">27</span>)])</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">colnames</span>(data_2024[, <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">15</span><span class="sc">:</span><span class="dv">27</span>)])</span>
 <span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>var.names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sprossanzahl pro Horst"</span>,</span>
 <span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sprossanzahl pro m² Horstgröße"</span>,</span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Horstgröße [m²]"</span>,</span>
@@ -434,7 +432,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="korrelationsmatrix" class="level2">
 <h2 class="anchored" data-anchor-id="korrelationsmatrix">Korrelationsmatrix</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>subsetcorr <span class="ot">&lt;-</span> <span class="fu">subset</span>(ind_data_2024, <span class="at">select=</span><span class="fu">c</span>(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh<span class="fl">.90</span>, l.leaves, w.leaves))</span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>subsetcorr <span class="ot">&lt;-</span> <span class="fu">subset</span>(data_2024, <span class="at">select=</span><span class="fu">c</span>(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_depth, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover, TL_cover, vh.max, vh<span class="fl">.90</span>, l.leaves, w.leaves))</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#add leaf area</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>subsetcorr <span class="ot">&lt;-</span> subsetcorr <span class="sc">%&gt;%</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">leaf.area =</span> w.leaves <span class="sc">*</span> l.leaves)</span>
@@ -465,7 +463,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="modell-zu-sprossanzahl-pro-horst-nb.stem">Modell zu Sprossanzahl pro Horst (nb.stem)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(nb.stem <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(nb.stem <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>glm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(glm1)</span>
@@ -487,8 +485,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>
 Call:
 glm.nb(formula = nb.stem ~ management2 + exposition + HL_cover + 
-    TL_cover, data = ind_data_2024, init.theta = 3.433064531, 
-    link = log)
+    TL_cover, data = data_2024, init.theta = 3.433064531, link = log)
 
 Coefficients:
                            Estimate Std. Error z value Pr(&gt;|z|)   
@@ -535,7 +532,7 @@ Number of Fisher Scoring iterations: 1
 <p><strong>Sprosszahl ~ Alle signifikanten Umweltvariablen</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leicht bearbeitete Funktion aus der Analyse von 2019 für nichtlineare Regression</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pplot_reg.lines.single.plots</span>(model_final, ind_data_2024, <span class="dv">2024</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pplot_reg.lines.single.plots</span>(model_final, data_2024, <span class="dv">2024</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br></p>
 </section>
@@ -544,7 +541,7 @@ Number of Fisher Scoring iterations: 1
 <h2 class="anchored" data-anchor-id="modell-zu-horstgröße-area.bunch">Modell zu Horstgröße (area.bunch)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(lm2)</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -570,7 +567,7 @@ Number of Fisher Scoring iterations: 1
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = log(area.bunch) ~ soil_depth + HL_cover, data = ind_data_2024)
+lm(formula = log(area.bunch) ~ soil_depth + HL_cover, data = data_2024)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -607,8 +604,8 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-1">Visualisierungen</h3>
 <p><strong>Horstgröße ~ Bodentiefe</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lm.soil_depth <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> soil_depth, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>soil_depth)</span>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lm.soil_depth <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> soil_depth, <span class="at">data =</span> data_2024)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>soil_depth)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">soil_depth =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.soil_depth,</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -620,7 +617,7 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 <span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_depth, <span class="at">y =</span> <span class="fu">log</span>(area.bunch))) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_depth, <span class="at">y =</span> <span class="fu">log</span>(area.bunch))) <span class="sc">+</span></span>
 <span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -650,8 +647,8 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 </div>
 <p><strong>Horstgröße ~ Deckung Krautschicht</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lm.HL_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> HL_cover, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>HL_cover)</span>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lm.HL_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(area.bunch) <span class="sc">~</span> HL_cover, <span class="at">data =</span> data_2024)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>HL_cover)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">HL_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.HL_cover,</span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -663,7 +660,7 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> HL_cover, <span class="at">y =</span> <span class="fu">log</span>(area.bunch))) <span class="sc">+</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> HL_cover, <span class="at">y =</span> <span class="fu">log</span>(area.bunch))) <span class="sc">+</span></span>
 <span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -698,7 +695,7 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-blüherfolg-cbindnb.flower-nb.stem">Modell zu Blüherfolg (cbind(nb.flower, nb.stem))</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024, <span class="at">family =</span> binomial)</span>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024, <span class="at">family =</span> binomial)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -721,7 +718,7 @@ F-statistic: 4.355 on 2 and 77 DF,  p-value: 0.01615</code></pre>
 <pre><code>
 Call:
 glm(formula = cbind(nb.flower, nb.stem) ~ management2 + soil_water + 
-    HL_cover, family = binomial, data = ind_data_2024)
+    HL_cover, family = binomial, data = data_2024)
 
 Coefficients:
                            Estimate Std. Error z value Pr(&gt;|z|)   
@@ -763,10 +760,10 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>glm_soil_water <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> soil_water, </span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> binomial,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> ind_data_2024)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> data_2024)</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">soil_water =</span> <span class="fu">seq</span>(<span class="fu">min</span>(ind_data_2024<span class="sc">$</span>soil_water), <span class="fu">max</span>(ind_data_2024<span class="sc">$</span>soil_water), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">soil_water =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_2024<span class="sc">$</span>soil_water), <span class="fu">max</span>(data_2024<span class="sc">$</span>soil_water), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>new.y<span class="sc">$</span>fit <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_soil_water, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"response"</span>)</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_soil_water, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
@@ -775,7 +772,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> ind_data_2024,</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_2024,</span>
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> soil_water, <span class="at">y =</span> nb.flower <span class="sc">/</span> nb.stem),</span>
 <span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
@@ -808,10 +805,10 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>glm_HL_cover <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> HL_cover, </span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> binomial,</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> ind_data_2024)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> data_2024)</span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">HL_cover =</span> <span class="fu">seq</span>(<span class="fu">min</span>(ind_data_2024<span class="sc">$</span>HL_cover), <span class="fu">max</span>(ind_data_2024<span class="sc">$</span>HL_cover), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">HL_cover =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_2024<span class="sc">$</span>HL_cover), <span class="fu">max</span>(data_2024<span class="sc">$</span>HL_cover), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>new.y<span class="sc">$</span>fit <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_HL_cover, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"response"</span>)</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_HL_cover, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
@@ -820,7 +817,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> ind_data_2024,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_2024,</span>
 <span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> HL_cover, <span class="at">y =</span> nb.flower <span class="sc">/</span> nb.stem),</span>
 <span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
@@ -856,7 +853,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-sprosshöhe-stem.height">Modell zu Sprosshöhe (stem.height)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(stem.height) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(stem.height) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(lm1)</span></span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
@@ -923,7 +920,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = log(stem.height) ~ soil_cover, data = ind_data_2024)
+lm(formula = log(stem.height) ~ soil_cover, data = data_2024)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
@@ -962,7 +959,7 @@ F-statistic: 2.695 on 1 and 78 DF,  p-value: 0.1047</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-sprossanzahl-pro-m²-horstgröße-stem.per.sqm">Modell zu Sprossanzahl pro m² Horstgröße (stem.per.sqm)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(lm1)</span>
@@ -987,7 +984,7 @@ F-statistic: 2.695 on 1 and 78 DF,  p-value: 0.1047</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = stem.per.sqm ~ management2 + vh.90, data = ind_data_2024)
+lm(formula = stem.per.sqm ~ management2 + vh.90, data = data_2024)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
@@ -1026,8 +1023,8 @@ F-statistic: 10.41 on 4 and 75 DF,  p-value: 9.227e-07</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-3">Visualisierungen</h3>
 <p><strong>Sprossanzahl pro m² Horstgröße ~ Höhe 90% der Vegetation</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>lm.vh<span class="fl">.90</span> <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>vh<span class="fl">.90</span>)</span>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>lm.vh<span class="fl">.90</span> <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>vh<span class="fl">.90</span>)</span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">vh.90 =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.vh<span class="fl">.90</span>,</span>
 <span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1039,7 +1036,7 @@ F-statistic: 10.41 on 4 and 75 DF,  p-value: 9.227e-07</code></pre>
 <span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> vh<span class="fl">.90</span>, <span class="at">y =</span> stem.per.sqm)) <span class="sc">+</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> vh<span class="fl">.90</span>, <span class="at">y =</span> stem.per.sqm)) <span class="sc">+</span></span>
 <span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1074,7 +1071,7 @@ F-statistic: 10.41 on 4 and 75 DF,  p-value: 9.227e-07</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-blattfläche-leaf.area">Modell zu Blattfläche (leaf.area)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(leaf.area <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(leaf.area <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(lm1)</span>
@@ -1095,7 +1092,7 @@ F-statistic: 10.41 on 4 and 75 DF,  p-value: 9.227e-07</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = leaf.area ~ soil_cover, data = ind_data_2024)
+lm(formula = leaf.area ~ soil_cover, data = data_2024)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -1131,8 +1128,8 @@ F-statistic: 5.881 on 1 and 78 DF,  p-value: 0.01762</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-4">Visualisierungen</h3>
 <p><strong>Blattfläche ~ Deckung offener Boden</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(leaf.area <span class="sc">~</span> soil_cover, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>soil_cover)</span>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(leaf.area <span class="sc">~</span> soil_cover, <span class="at">data =</span> data_2024)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>soil_cover)</span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">soil_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.soil_cover,</span>
 <span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1144,7 +1141,7 @@ F-statistic: 5.881 on 1 and 78 DF,  p-value: 0.01762</code></pre>
 <span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> leaf.area)) <span class="sc">+</span></span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> leaf.area)) <span class="sc">+</span></span>
 <span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1180,7 +1177,7 @@ F-statistic: 5.881 on 1 and 78 DF,  p-value: 0.01762</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-deckung-krautschicht-hl_cover">Modell zu Deckung Krautschicht (HL_cover)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> ind_data_2024)</span>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> SL_cover <span class="sc">+</span> TL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover <span class="sc">+</span> vh.max <span class="sc">+</span> vh<span class="fl">.90</span>, <span class="at">data =</span> data_2024)</span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(lm1)</span>
@@ -1202,7 +1199,7 @@ F-statistic: 5.881 on 1 and 78 DF,  p-value: 0.01762</code></pre>
 <pre><code>
 Call:
 lm(formula = HL_cover ~ management2 + SL_cover + soil_cover + 
-    moss_cover, data = ind_data_2024)
+    moss_cover, data = data_2024)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -1243,8 +1240,8 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-5">Visualisierungen</h3>
 <p><strong>Deckung Krautschicht ~ Deckung Strauchschicht</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>lm.SL_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> SL_cover, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>SL_cover)</span>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>lm.SL_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> SL_cover, <span class="at">data =</span> data_2024)</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>SL_cover)</span>
 <span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">SL_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.SL_cover,</span>
 <span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1256,7 +1253,7 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> SL_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> SL_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1286,8 +1283,8 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 </div>
 <p><strong>Deckung Krautschicht ~ Deckung offener Boden</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> soil_cover, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>soil_cover)</span>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> soil_cover, <span class="at">data =</span> data_2024)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>soil_cover)</span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">soil_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.soil_cover,</span>
 <span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1299,7 +1296,7 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1329,8 +1326,8 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 </div>
 <p><strong>Deckung Krautschicht ~ Deckung Moosschicht</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>lm.moss_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> moss_cover, <span class="at">data =</span> ind_data_2024)</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_2024<span class="sc">$</span>moss_cover)</span>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>lm.moss_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> moss_cover, <span class="at">data =</span> data_2024)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_2024<span class="sc">$</span>moss_cover)</span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">moss_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.moss_cover,</span>
 <span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1342,7 +1339,7 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_2024, <span class="fu">aes</span>(<span class="at">x =</span> moss_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_2024, <span class="fu">aes</span>(<span class="at">x =</span> moss_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1389,25 +1386,25 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <section id="zusammenführen-von-daten" class="level2">
 <h2 class="anchored" data-anchor-id="zusammenführen-von-daten">Zusammenführen von Daten</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>ind_data_2024<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="dv">2024</span></span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>ind_data_2019<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="dv">2019</span></span>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>data_2024<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="dv">2024</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>data_2019<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="dv">2019</span></span>
 <span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>common_columns <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">names</span>(ind_data_2024), <span class="fu">names</span>(ind_data_2019))</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>common_columns <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">names</span>(data_2024), <span class="fu">names</span>(data_2019))</span>
 <span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>ind_data_2024_common <span class="ot">&lt;-</span> ind_data_2024[, <span class="fu">c</span>(common_columns, <span class="st">"year"</span>)]</span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>ind_data_2019_common <span class="ot">&lt;-</span> ind_data_2019[, <span class="fu">c</span>(common_columns, <span class="st">"year"</span>)]</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>data_2024_common <span class="ot">&lt;-</span> data_2024[, <span class="fu">c</span>(common_columns, <span class="st">"year"</span>)]</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>data_2019_common <span class="ot">&lt;-</span> data_2019[, <span class="fu">c</span>(common_columns, <span class="st">"year"</span>)]</span>
 <span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ind_data_2024_common) <span class="ot">&lt;-</span> common_columns</span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ind_data_2019_common) <span class="ot">&lt;-</span> common_columns</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(data_2024_common) <span class="ot">&lt;-</span> common_columns</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(data_2019_common) <span class="ot">&lt;-</span> common_columns</span>
 <span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>ind_data_merged <span class="ot">&lt;-</span> <span class="fu">rbind</span>(ind_data_2024_common, ind_data_2019_common)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>data_merged <span class="ot">&lt;-</span> <span class="fu">rbind</span>(data_2024_common, data_2019_common)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br></p>
 </section>
 <section id="korrelationsmatrix-1" class="level2">
 <h2 class="anchored" data-anchor-id="korrelationsmatrix-1">Korrelationsmatrix</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>subsetcorr <span class="ot">&lt;-</span> <span class="fu">subset</span>(ind_data_merged, <span class="at">select=</span><span class="fu">c</span>(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))</span>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>subsetcorr <span class="ot">&lt;-</span> <span class="fu">subset</span>(data_merged, <span class="at">select=</span><span class="fu">c</span>(nb.stem, stem.per.sqm, prop.flower, area.bunch, nb.flower, stem.height, exposition, slope, soil_water, PAR, HL_cover, SL_cover, soil_cover, moss_cover))</span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="co">#make matrix</span></span>
 <span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>cormatrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(subsetcorr)</span>
 <span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>corpvalues <span class="ot">&lt;-</span> <span class="fu">cor.mtest</span>(subsetcorr)</span>
@@ -1435,7 +1432,7 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-sprosszahl-pro-horst-nb.stem">Modell zu Sprosszahl pro Horst (nb.stem)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(nb.stem <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> ind_data_merged)</span>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(nb.stem <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> data_merged)</span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span>
 <span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>glm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(glm1)</span>
@@ -1454,7 +1451,7 @@ F-statistic:  16.1 on 6 and 73 DF,  p-value: 1.051e-11</code></pre>
 <pre><code>
 Call:
 glm.nb(formula = nb.stem ~ management2 + soil_depth + PAR + HL_cover + 
-    soil_cover, data = ind_data_merged, init.theta = 2.74491993, 
+    soil_cover, data = data_merged, init.theta = 2.74491993, 
     link = log)
 
 Coefficients:
@@ -1502,7 +1499,7 @@ Number of Fisher Scoring iterations: 1
 <h3 class="anchored" data-anchor-id="visualisierungen-6">Visualisierungen</h3>
 <p><strong>Sprosszahl pro Horst ~ Alle signifikanten Umweltvariablen</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pplot_reg.lines.single.plots</span>(model_final, ind_data_merged, <span class="st">"merged"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pplot_reg.lines.single.plots</span>(model_final, data_merged, <span class="st">"merged"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br></p>
 </section>
@@ -1511,7 +1508,7 @@ Number of Fisher Scoring iterations: 1
 <h2 class="anchored" data-anchor-id="modell-zu-blüherfolg-cbindnb.flower-nb.stem-1">Modell zu Blüherfolg (cbind(nb.flower, nb.stem))</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> ind_data_merged, <span class="at">family =</span> binomial)</span>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> data_merged, <span class="at">family =</span> binomial)</span>
 <span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span>
 <span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1537,7 +1534,7 @@ Number of Fisher Scoring iterations: 1
 <pre><code>
 Call:
 glm(formula = cbind(nb.flower, nb.stem) ~ soil_depth + HL_cover, 
-    family = binomial, data = ind_data_merged)
+    family = binomial, data = data_merged)
 
 Coefficients:
             Estimate Std. Error z value Pr(&gt;|z|)    
@@ -1576,10 +1573,10 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>glm_soil_depth <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> soil_depth, </span>
 <span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> binomial,</span>
-<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> ind_data_merged)</span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> data_merged)</span>
 <span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">soil_depth =</span> <span class="fu">seq</span>(<span class="fu">min</span>(ind_data_merged<span class="sc">$</span>soil_depth), <span class="fu">max</span>(ind_data_merged<span class="sc">$</span>soil_depth), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">soil_depth =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_merged<span class="sc">$</span>soil_depth), <span class="fu">max</span>(data_merged<span class="sc">$</span>soil_depth), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
 <span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>new.y<span class="sc">$</span>fit <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_soil_depth, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"response"</span>)</span>
 <span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_soil_depth, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
@@ -1588,7 +1585,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <span id="cb90-12"><a href="#cb90-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb90-13"><a href="#cb90-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb90-14"><a href="#cb90-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb90-15"><a href="#cb90-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> ind_data_merged,</span>
+<span id="cb90-15"><a href="#cb90-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_merged,</span>
 <span id="cb90-16"><a href="#cb90-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> soil_depth, <span class="at">y =</span> nb.flower <span class="sc">/</span> nb.stem),</span>
 <span id="cb90-17"><a href="#cb90-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb90-18"><a href="#cb90-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
@@ -1621,10 +1618,10 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>glm_HL_cover <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(nb.flower, nb.stem) <span class="sc">~</span> HL_cover, </span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> binomial,</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> ind_data_merged)</span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> data_merged)</span>
 <span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">HL_cover =</span> <span class="fu">seq</span>(<span class="fu">min</span>(ind_data_merged<span class="sc">$</span>HL_cover), <span class="fu">max</span>(ind_data_merged<span class="sc">$</span>HL_cover), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">HL_cover =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_merged<span class="sc">$</span>HL_cover), <span class="fu">max</span>(data_merged<span class="sc">$</span>HL_cover), <span class="at">length.out =</span> <span class="dv">100</span>)</span>
 <span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>new.y<span class="sc">$</span>fit <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_HL_cover, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"response"</span>)</span>
 <span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm_HL_cover, <span class="at">newdata =</span> new.y, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
@@ -1633,7 +1630,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb92-13"><a href="#cb92-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb92-14"><a href="#cb92-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb92-15"><a href="#cb92-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> ind_data_merged,</span>
+<span id="cb92-15"><a href="#cb92-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_merged,</span>
 <span id="cb92-16"><a href="#cb92-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> HL_cover, <span class="at">y =</span> nb.flower <span class="sc">/</span>  nb.stem),</span>
 <span id="cb92-17"><a href="#cb92-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb92-18"><a href="#cb92-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
@@ -1669,7 +1666,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-sprossanzahl-pro-m²-horstgröße-stem.per.sqm-1">Modell zu Sprossanzahl pro m² Horstgröße (stem.per.sqm)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> ind_data_merged)</span>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> HL_cover <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> data_merged)</span>
 <span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(lm1)</span>
@@ -1690,7 +1687,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = stem.per.sqm ~ management2 + soil_water, data = ind_data_merged)
+lm(formula = stem.per.sqm ~ management2 + soil_water, data = data_merged)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -1729,8 +1726,8 @@ F-statistic: 8.491 on 4 and 166 DF,  p-value: 2.942e-06</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-8">Visualisierungen</h3>
 <p><strong>Sprossanzahl pro m² Horstgröße ~ Bodenfeuchte</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>lm.soil_water <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> soil_water, <span class="at">data =</span> ind_data_merged)</span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_merged<span class="sc">$</span>soil_water)</span>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>lm.soil_water <span class="ot">&lt;-</span> <span class="fu">lm</span>(stem.per.sqm <span class="sc">~</span> soil_water, <span class="at">data =</span> data_merged)</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_merged<span class="sc">$</span>soil_water)</span>
 <span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">soil_water =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.soil_water,</span>
 <span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1742,7 +1739,7 @@ F-statistic: 8.491 on 4 and 166 DF,  p-value: 2.942e-06</code></pre>
 <span id="cb100-11"><a href="#cb100-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb100-12"><a href="#cb100-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb100-13"><a href="#cb100-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-14"><a href="#cb100-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_merged, <span class="fu">aes</span>(<span class="at">x =</span> soil_water, <span class="at">y =</span> stem.per.sqm)) <span class="sc">+</span></span>
+<span id="cb100-14"><a href="#cb100-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_merged, <span class="fu">aes</span>(<span class="at">x =</span> soil_water, <span class="at">y =</span> stem.per.sqm)) <span class="sc">+</span></span>
 <span id="cb100-15"><a href="#cb100-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb100-16"><a href="#cb100-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb100-17"><a href="#cb100-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1777,7 +1774,7 @@ F-statistic: 8.491 on 4 and 166 DF,  p-value: 2.942e-06</code></pre>
 <h2 class="anchored" data-anchor-id="modell-zu-deckung-krautschicht-hl_cover-1">Modell zu Deckung Krautschicht (HL_cover)</h2>
 <p>Erstellen und Simplifikation des Modells. Außerdem Exportieren der Ergebnisse in Excel-Datei.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> ind_data_merged)</span>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> management2 <span class="sc">+</span> exposition <span class="sc">+</span> slope <span class="sc">+</span> soil_depth <span class="sc">+</span> soil_water <span class="sc">+</span> PAR <span class="sc">+</span> SL_cover <span class="sc">+</span> soil_cover <span class="sc">+</span> moss_cover, <span class="at">data =</span> data_merged)</span>
 <span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span>
 <span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(lm1)</span>
@@ -1795,7 +1792,7 @@ F-statistic: 8.491 on 4 and 166 DF,  p-value: 2.942e-06</code></pre>
 <pre><code>
 Call:
 lm(formula = HL_cover ~ slope + PAR + soil_cover + moss_cover, 
-    data = ind_data_merged)
+    data = data_merged)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -1834,8 +1831,8 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h3 class="anchored" data-anchor-id="visualisierungen-9">Visualisierungen</h3>
 <p><strong>Deckung Krautschicht ~ Deckung Strauchschicht</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>lm.slope <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> slope, <span class="at">data =</span> ind_data_merged)</span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_merged<span class="sc">$</span>slope)</span>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>lm.slope <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> slope, <span class="at">data =</span> data_merged)</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_merged<span class="sc">$</span>slope)</span>
 <span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">slope =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.slope,</span>
 <span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1847,7 +1844,7 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb108-11"><a href="#cb108-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb108-12"><a href="#cb108-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb108-13"><a href="#cb108-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-14"><a href="#cb108-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_merged, <span class="fu">aes</span>(<span class="at">x =</span> slope, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb108-14"><a href="#cb108-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_merged, <span class="fu">aes</span>(<span class="at">x =</span> slope, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb108-15"><a href="#cb108-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb108-16"><a href="#cb108-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb108-17"><a href="#cb108-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1877,8 +1874,8 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p><strong>Deckung Krautschicht ~ Photosynthetisch aktive Strahlung</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>lm.PAR <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> PAR, <span class="at">data =</span> ind_data_merged)</span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_merged<span class="sc">$</span>PAR)</span>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>lm.PAR <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> PAR, <span class="at">data =</span> data_merged)</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_merged<span class="sc">$</span>PAR)</span>
 <span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PAR =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.PAR,</span>
 <span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1890,7 +1887,7 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb110-11"><a href="#cb110-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb110-12"><a href="#cb110-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb110-13"><a href="#cb110-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb110-14"><a href="#cb110-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_merged, <span class="fu">aes</span>(<span class="at">x =</span> PAR, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb110-14"><a href="#cb110-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_merged, <span class="fu">aes</span>(<span class="at">x =</span> PAR, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb110-15"><a href="#cb110-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb110-16"><a href="#cb110-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb110-17"><a href="#cb110-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1920,8 +1917,8 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p><strong>Deckung Krautschicht ~ Deckung offener Boden</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> soil_cover, <span class="at">data =</span> ind_data_merged)</span>
-<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_merged<span class="sc">$</span>soil_cover)</span>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>lm.soil_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> soil_cover, <span class="at">data =</span> data_merged)</span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_merged<span class="sc">$</span>soil_cover)</span>
 <span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">soil_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.soil_cover,</span>
 <span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1933,7 +1930,7 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb112-11"><a href="#cb112-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb112-12"><a href="#cb112-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb112-13"><a href="#cb112-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb112-14"><a href="#cb112-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_merged, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb112-14"><a href="#cb112-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_merged, <span class="fu">aes</span>(<span class="at">x =</span> soil_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb112-15"><a href="#cb112-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb112-16"><a href="#cb112-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb112-17"><a href="#cb112-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
@@ -1963,8 +1960,8 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p><strong>Deckung Krautschicht ~ Deckung Moosschicht</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>lm.moss_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> moss_cover, <span class="at">data =</span> ind_data_merged)</span>
-<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(ind_data_merged<span class="sc">$</span>moss_cover)</span>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>lm.moss_cover <span class="ot">&lt;-</span> <span class="fu">lm</span>(HL_cover <span class="sc">~</span> moss_cover, <span class="at">data =</span> data_merged)</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>range.x <span class="ot">&lt;-</span> <span class="fu">range</span>(data_merged<span class="sc">$</span>moss_cover)</span>
 <span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>new.x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">moss_cover =</span> <span class="fu">seq</span>(<span class="at">from =</span> range.x[<span class="dv">1</span>], <span class="at">to =</span> range.x[<span class="dv">2</span>], <span class="fl">0.1</span>))</span>
 <span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>new.y <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm.moss_cover,</span>
 <span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">newdata =</span> new.x,</span>
@@ -1976,7 +1973,7 @@ F-statistic: 35.26 on 4 and 166 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb114-11"><a href="#cb114-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper =</span> (fit <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se.fit))</span>
 <span id="cb114-12"><a href="#cb114-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb114-13"><a href="#cb114-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb114-14"><a href="#cb114-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ind_data_merged, <span class="fu">aes</span>(<span class="at">x =</span> moss_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
+<span id="cb114-14"><a href="#cb114-14" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_merged, <span class="fu">aes</span>(<span class="at">x =</span> moss_cover, <span class="at">y =</span> HL_cover)) <span class="sc">+</span></span>
 <span id="cb114-15"><a href="#cb114-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
 <span id="cb114-16"><a href="#cb114-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
 <span id="cb114-17"><a href="#cb114-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">16</span>,</span>
