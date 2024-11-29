@@ -1139,7 +1139,7 @@ plot <- ggplot() +
               fill = "green",
               alpha = 0.35) +
   labs(x = "Deckung Krautschicht [%]",
-       y = "Anteil blühender Sprosse [%]") +
+       y = "Anteil blühender Sprosse") +
   theme(panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill = NA),
         plot.margin = unit(c(0, 0.05, 0.2, 0), "cm"),
