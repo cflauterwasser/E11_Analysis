@@ -1,0 +1,151 @@
+---
+title: "Karten"
+author: "Hans Großgott, Luise Schidlo"
+format: html
+editor: visual
+---
+
+## Einladen der Packages
+
+```{r}
+#| output: false
+library(tidyverse) #add tidyverse
+library(openxlsx) #to read xlsx
+library(XML) #to read gpx
+library(htmltools) #to interprete html code in text
+library(sf) #for spatial operations
+library(leaflet) #to make the map
+```
+
+## Einladen der Daten
+
+```{r}
+#| output: false
+#code from https://www.appsilon.com/post/r-gpx-files
+
+#Punktdaten einlesen
+#alles muss im gleichen Ordner sein
+#wir haben wgs84 und das müssen wir R mitteilen
+pkt <- read.xlsx("E11_Data_sorted.xlsx",
+                 sheet = 6) |>
+  data.frame()
+str(pkt)
+pkt$Location <- as.factor(pkt$Location)
+pkt$Eckpunkt <- as.factor(pkt$Eckpunkt)
+pkt$lat <- as.numeric(pkt$lat)
+pkt$lon <- as.numeric(pkt$lon)
+str(pkt)
+pkt_NE <- subset(pkt, Location == "nicht entbuscht")
+pkt_E <- subset(pkt, Location == "entbuscht")
+pkt_F <- subset(pkt, Location == "Fichte")
+pkt_B <- subset(pkt, Location == "Buche")
+pt <- st_as_sf(pkt,
+               coords = c("lon", "lat"),
+               crs = 4326)
+pt_NE <- subset(pt, Location == "nicht entbuscht")
+pt_E <- subset(pt, Location == "entbuscht")
+pt_F <- subset(pt, Location == "Fichte")
+pt_B <- subset(pt, Location == "Buche")
+
+ind <- read.xlsx("E11_Data_sorted.xlsx",
+                 sheet = 4)
+str(ind)
+ind$location <- as.factor(ind$location)
+ind$waypoint.name <- as.factor(ind$waypoint.name)
+ind$number.of.indvi <- as.numeric(ind$n.ind)
+str(ind)
+ind_NE <- subset(ind, location == "nicht entbuscht")
+legend.vector_NE <- paste0("Plot name: ", 
+                        ind_NE$waypoint.name,
+                        "<br>")
+ind_E <- subset(ind, location == "entbuscht")
+legend.vector_E <- paste0("Plot name: ", 
+                        ind_E$waypoint.name,
+                        "<br>")
+ind_F <- subset(ind, location == "Fichte")
+legend.vector_F <- paste0("Plot name: ", 
+                        ind_F$waypoint.name,
+                        "<br>")
+ind_B <- subset(ind, location == "Buche")
+legend.vector_B <- paste0("Plot name: ", 
+                        ind_B$waypoint.name,
+                        "<br>")
+Plottype_abk1 <- as.vector(ind$location) |> 
+  unique() |> 
+  factor() |>
+  fct_reorder(c("nicht entbuscht", "entbuscht", "Buche", "Fichte"))
+pal1 <- colorFactor(c("firebrick", "gold", "darkblue", "forestgreen"),
+                    domain = Plottype_abk1,
+                    ordered = TRUE)
+```
+
+## Karte erzeugen
+
+```{r}
+leaflet() |> 
+  addTiles() |>   
+  addPolygons(data = pkt_NE,
+              lat = ~lat,
+              lng = ~lon,
+              color = "forestgreen",
+              opacity = 0.8,
+              weight = 3) |>
+  addPolygons(data = pkt_E,
+              lat = ~lat,
+              lng = ~lon,
+              color = "gold",
+              opacity = 0.8,
+              weight = 3) |>
+  addPolygons(data = pkt_F,
+              lat = ~lat,
+              lng = ~lon,
+              color = "darkblue",
+              opacity = 0.8,
+              weight = 3) |>
+  addPolygons(data = pkt_B,
+              lat = ~lat,
+              lng = ~lon,
+              color = "firebrick",
+              opacity = 0.8,
+              weight = 3) |>
+  addCircleMarkers(data = pt_NE,
+                   radius = 0.5,
+                   color = "forestgreen") |>
+  addCircleMarkers(data = pt_E,
+                   radius = 0.5,
+                   color = "gold") |>
+  addCircleMarkers(data = pt_F,
+                   radius = 0.5,
+                   color = "darkblue")|>
+  addCircleMarkers(data = pt_B,
+                   radius = 0.5,
+                   color = "firebrick") |>
+  addCircleMarkers(data = ind_NE,
+                   label = ~ lapply(legend.vector_NE, HTML),
+                 color = "forestgreen",
+                 radius = 0.5,
+                 lat = ~North,
+                 lng = ~East) |> 
+  addCircleMarkers(data = ind_E,
+                   label = ~ lapply(legend.vector_E, HTML),
+                 color = "gold",
+                 radius = 0.5,
+                 lat = ~North,
+                 lng = ~East) |>
+  addCircleMarkers(data = ind_F,
+                   label = ~ lapply(legend.vector_F, HTML),
+                 color = "darkblue",
+                 radius = 0.5,
+                 lat = ~North,
+                 lng = ~East) |>
+  addCircleMarkers(data = ind_B,
+                   label = ~ lapply(legend.vector_B, HTML),
+                 color = "firebrick",
+                 radius = 0.5,
+                 lat = ~North,
+                 lng = ~East) |>
+  addScaleBar(
+    position = c("bottomright"),
+    options = scaleBarOptions()) |>
+  scaleBarOptions(metric = TRUE)
+```

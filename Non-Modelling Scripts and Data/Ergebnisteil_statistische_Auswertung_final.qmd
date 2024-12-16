@@ -1,0 +1,271 @@
+---
+title: "Ergebnisteil"
+author: Hans Großgott
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Packages laden
+
+```{r}
+
+#| output: false
+library(tidyverse) #add tidyverse
+library(openxlsx) #to read xlsx
+library(XML) #to read gpx
+library(htmltools) #to interprete html code in text
+library(sf) #for spatial operations
+library(leaflet) #to make the map
+library(dunn.test)
+library(units)
+library(multcompView)
+library(FSA)
+library(naniar)
+library(skimr)
+```
+
+## Daten einladen
+
+```{r}
+
+###___________________Eckpunkte einlesen für Dichteberechnung_____________________________________###
+
+eckpunkte <- read.xlsx("E11_Data_sorted.xlsx",
+                 sheet = 6) |>
+  data.frame()
+str(eckpunkte)
+eckpunkte$Location <- as.factor(eckpunkte$Location)
+eckpunkte$Eckpunkt <- as.factor(eckpunkte$Eckpunkt)
+eckpunkte$lat <- as.numeric(eckpunkte$lat)
+eckpunkte$lon <- as.numeric(eckpunkte$lon)
+str(eckpunkte)
+
+eckpunkte <- st_as_sf(eckpunkte,
+               coords = c("lon", "lat"),
+               crs = 4326)
+str(eckpunkte)
+
+eckpunkte_n <- subset(eckpunkte, Location == "nicht entbuscht")
+eckpunkte_e <- subset(eckpunkte, Location == "entbuscht")
+eckpunkte_b <- subset(eckpunkte, Location == "Buche")
+eckpunkte_f <- subset(eckpunkte, Location == "Fichte")
+
+area_n <- st_as_sf(eckpunkte_n) |> 
+  st_bbox() |> 
+  st_as_sfc() |> 
+  st_area()
+area_e <- st_as_sf(eckpunkte_e) |> 
+  st_bbox() |> 
+  st_as_sfc() |> 
+  st_area()
+area_b <- st_as_sf(eckpunkte_b) |> 
+  st_bbox() |> 
+  st_as_sfc() |> 
+  st_area()
+area_f <- st_as_sf(eckpunkte_f) |> 
+  st_bbox() |> 
+  st_as_sfc() |> 
+  st_area()
+
+###______________________________________________Dichte Sprosse___________________________________________###
+
+dichte <- read.xlsx("E11_Data_sorted.xlsx",
+                 sheet = 5) |>
+  data.frame()
+str(dichte)
+dichte$location <- as.factor(dichte$location)
+dichte <- dichte[, c(1, 5)]
+dichte <- droplevels(dichte)
+str(dichte)
+
+dichte_n <- subset(dichte, location == "nicht entbuscht")
+dichte_e <- subset(dichte, location == "entbuscht")
+dichte_b <- subset(dichte, location == "Buche")
+dichte_f <- subset(dichte, location == "Fichte")
+
+sum_dichte_n <- sum(dichte_n$n.ind, na.rm = T)
+sum_dichte_e <- sum(dichte_e$n.ind, na.rm = T)
+sum_dichte_b <- sum(dichte_b$n.ind, na.rm = T)
+sum_dichte_f <- sum(dichte_f$n.ind, na.rm = T)
+
+dichte_n_d <- sum_dichte_n/area_n
+dichte_e_d <- sum_dichte_e/area_e
+dichte_b_d <- sum_dichte_b/area_b
+dichte_f_d <- sum_dichte_f/area_f
+
+dichte_ges_names <- c("nicht entbuscht", "entbuscht", "Buche", "Fichte")
+dichte_ges_dichte <- c(dichte_n_d, dichte_e_d, dichte_b_d, dichte_f_d)
+dichte_ges_v <- data.frame(dichte_ges_names, dichte_ges_dichte)
+dichte_ges_v$dichte_ges_names <- as.factor(dichte_ges_v$dichte_ges_names)
+dichte_ges_v$dichte_ges_dichte <- drop_units(dichte_ges_v$dichte_ges_dichte)
+names(dichte_ges_v)[1] <- paste("Fläche")
+names(dichte_ges_v)[2] <- paste("Dichte")
+
+write.xlsx(dichte_ges_v, "Dichte_Tabelle.xlsx")
+
+###____________________Dichte blühender Sprosse______________________________###
+
+blühend <- read.xlsx("E11_Data_sorted.xlsx",
+                     sheet = 5) |>
+  data.frame()
+str(blühend)
+blühend <- blühend[, c(1, 6)]
+blühend <- droplevels(blühend)
+str(blühend)
+blühend$location <- as.factor(blühend$location)
+
+blühend_n <- subset(blühend, location == "nicht entbuscht")
+blühend_e <- subset(blühend, location == "entbuscht")
+blühend_b <- subset(blühend, location == "Buche")
+blühend_f <- subset(blühend, location == "Fichte")
+
+sum_blühend_n <- sum(blühend_n$n.flow.ind, na.rm = T)
+sum_blühend_e <- sum(blühend_e$n.flow.ind, na.rm = T)
+sum_blühend_b <- sum(blühend_b$n.flow.ind, na.rm = T)
+sum_blühend_f <- sum(blühend_f$n.flow.ind, na.rm = T)
+
+dichte_blühend_n <- sum_blühend_n/area_n
+dichte_blühend_e <- sum_blühend_e/area_e
+dichte_blühend_b <- sum_blühend_b/area_b
+dichte_blühend_f <- sum_blühend_f/area_f
+
+dichte_blühend_names <- c("nicht entbuscht", "entbuscht", "Buche", "Fichte")
+dichte_blühend_dichte <- c(dichte_blühend_n, dichte_blühend_e, dichte_blühend_b, dichte_blühend_f)
+dichte_blühend_ges_v <- data.frame(dichte_blühend_names, dichte_blühend_dichte)
+dichte_blühend_ges_v$dichte_blühend_names <- as.factor(dichte_blühend_ges_v$dichte_blühend_names)
+dichte_blühend_ges_v$dichte_blühend_dichte <- drop_units(dichte_blühend_ges_v$dichte_blühend_dichte)
+names(dichte_blühend_ges_v)[1] <- paste("Fläche")
+names(dichte_blühend_ges_v)[2] <- paste("Blühende_Dichte")
+
+write.xlsx(dichte_blühend_ges_v, "Blühende_Dichte_Tabelle.xlsx")
+
+dichte_neu <- read.xlsx("Dichte_Tabelle.xlsx") |>
+  data.frame()
+dichte_neu$Fläche <- as.factor(dichte_neu$Fläche)
+str(dichte_neu)
+
+blühende_dichte_neu <- read.xlsx("Blühende_Dichte_Tabelle.xlsx") |>
+  data.frame()
+blühende_dichte_neu$Fläche <- as.factor(blühende_dichte_neu$Fläche)
+str(blühende_dichte_neu)
+
+###___________________Horstgröße___________________________###
+
+horstgrösse <- read.xlsx("E11_Data_sorted.xlsx",
+                     sheet = 4) |>
+  data.frame()
+horstgrösse$location <- as.factor(horstgrösse$location)
+horstgrösse$grösse <- (horstgrösse$area.length*horstgrösse$area.width)/10000
+horstgrösse <- horstgrösse[, c(1, 5, 45)]
+horstgrösse <- droplevels(horstgrösse)
+
+horstgrösse_ne <- subset(horstgrösse, location == "nicht entbuscht")
+horstgrösse_e <- subset(horstgrösse, location == "entbuscht")
+horstgrösse_b <- subset(horstgrösse, location == "Buche")
+horstgrösse_f <- subset(horstgrösse, location == "Fichte")
+
+###_____________________Blüherfolg__________________________###
+
+blüherfolg <- read.xlsx("E11_Data_sorted.xlsx",
+                        sheet = 4) |>
+  data.frame()
+blüherfolg$erfolg <- blüherfolg$n.flow.ind/blüherfolg$n.ind*100
+
+blüherfolg$location <- as.factor(blüherfolg$location)
+
+blüherfolg <- blüherfolg[, c(1, 6, 45)]
+blüherfolg <- droplevels(blüherfolg)
+
+###________________________________________________###
+
+data <- read.xlsx("E11_Data_sorted.xlsx",
+                  sheet = 4) |>
+  data.frame()
+```
+
+## Dichte Sprosse Unterschiede
+
+```{r}
+# vier Werte werden verglichen, daher kein Test auf Normalverteilung sinnvoll
+
+kruskal.test(Dichte ~ Fläche, data = dichte_neu) # Keine signifikanten Unterschiede!
+
+dunn.test(dichte_ges_v$Dichte,
+          dichte_ges_v$Fläche,
+          method = "holm") # Bestätigung von Kruskal-Wallis-Test: Keine signifikanten Unterschiede zwischen den Gruppen
+```
+
+## Dichte blühende Sprosse Unterschied
+
+```{r}
+# vier Werte werden verglichen, daher kein Test auf Normalverteilung sinnvoll
+
+kruskal.test(Blühende_Dichte ~ Fläche, data = blühende_dichte_neu) # Keine signifikanten Unterschiede!
+
+dunn.test(blühende_dichte_neu$Blühende_Dichte, 
+                     blühende_dichte_neu$Fläche, 
+                     method = "holm") # Bestätigung von Kruskal-Wallis-Test: Keine signifikanten Unterschiede zwischen den Gruppen
+```
+
+## Horstgrößen Unterschiede
+
+```{r}
+
+shapiro.test(horstgrösse$n.ind)
+
+kruskal.test(n.ind ~ location, data = horstgrösse) # -> signifikante Unterschiede vorhanden
+
+dunn.test(horstgrösse$n.ind,
+          horstgrösse$location,
+          method = "holm") # Buche signifikant unterschiedlich von entbuscht und nicht entbuscht, Fichte und entbuscht signifikant unterschiedlich
+
+horstgrösse |>
+  group_by(location) |>
+  summarise(Mittelwert = mean(n.ind))
+
+horstgrösse |>
+  group_by(location) |>
+  summarise(Standardfehler = sd(n.ind)/sqrt(20))
+```
+
+## Blüherfolg Unterschiede
+
+```{r}
+
+shapiro.test(blüherfolg$erfolg)
+
+kruskal.test(erfolg ~ location, 
+             data = blüherfolg) # p < 0.05 -> es gibt signifikante Unterschiede
+dunn.test(blüherfolg$erfolg,
+          blüherfolg$location,
+          method = "holm") # signifikante Unterschiede zwischen Buche und entbuscht sowie zwischen nicht entbuscht und entbuscht
+
+blüherfolg |>
+  group_by(location) |>
+  summarise(Mittelwert = mean(erfolg))
+
+blüherfolg |>
+  group_by(location) |>
+  summarise(Standardfehler = sd(erfolg)/sqrt(20))
+
+blüherfolg |>
+  group_by(location) |>
+  summarise(Standardabweichung = sd(erfolg))
+```
+
+## Absolute Anzahl blühender Sprosse Unterschiede
+
+```{r}
+
+shapiro.test(horstgrösse$grösse) # Test auf Normalverteilung -> Keine Normalverteilung
+
+kruskal.test(grösse ~ location, data = horstgrösse)
+dunn.test(horstgrösse$grösse, 
+          horstgrösse$location,
+          method = "holm")
+# Keine signifikanten Unterschiede
+```

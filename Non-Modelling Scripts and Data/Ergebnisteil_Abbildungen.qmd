@@ -1,0 +1,375 @@
+---
+title: "AuswertungE11_aktuell"
+author: "Hans Grossgott, Fabian Löber"
+format: html
+editor: visual
+---
+
+## **Packages laden**
+
+```{r}
+#####Einladen der benötigten Packages
+#| output: false
+library(tidyverse) #add tidyverse
+library(openxlsx) #to read xlsx
+library(XML) #to read gpx
+library(htmltools) #to interprete html code in text
+library(sf) #for spatial operations
+library(leaflet) #to make the map
+library(dunn.test)
+library(units)
+library(multcompView)
+library(FSA)
+library(naniar)
+library(skimr)
+```
+
+## **Daten einlesen**
+
+### **Eckpunkte der Flächen einlesen**
+
+```{r}
+#| output: false
+#code from https://www.appsilon.com/post/r-gpx-files
+#alles muss im gleichen Ordner sein
+
+#Einlesen der Eckpunkte der Flächen
+pkt <- read.xlsx("E11_Data_sorted_1.xlsx",
+                 sheet = 6) |>
+  data.frame()
+
+str(pkt)
+pkt$Location <- as.factor(pkt$Location)
+pkt$Eckpunkt <- as.factor(pkt$Eckpunkt)
+pkt$lat <- as.numeric(pkt$lat)
+pkt$lon <- as.numeric(pkt$lon)
+str(pkt)
+pkt_NE <- subset(pkt, Location == "Nicht_entbuscht")
+pkt_E <- subset(pkt, Location == "Entbuscht")
+pkt_F <- subset(pkt, Location == "Fichte")
+pkt_B <- subset(pkt, Location == "Buche")
+pt <- st_as_sf(pkt,
+               coords = c("lon", "lat"),
+               crs = 4326)
+pt_NE <- subset(pt, Location == "Nicht_entbuscht")
+pt_E <- subset(pt, Location == "Entbuscht")
+pt_F <- subset(pt, Location == "Fichte")
+pt_B <- subset(pt, Location == "Buche")
+```
+
+### **Einlesen der jeweils 20 aufgenommenen Horste**
+
+```{r}
+# Einlesen der aufgenommenen 20 Individuen samt traits
+ind <- read.xlsx("E11_Data_sorted_1.xlsx", 
+                 sheet = 4)
+str(ind)
+ind$location <- as.factor(ind$location)
+ind$waypoint.name <- as.factor(ind$waypoint.name)
+ind$number.of.indvi <- as.numeric(ind$n.ind)
+str(ind)
+ind_NE <- subset(ind, location == "Nicht_entbuscht")
+legend.vector_NE <- paste0("Plot name: ",
+                           ind_NE$waypoint.name,
+                           "<br>")
+ind_E <- subset(ind, location == "Entbuscht")
+legend.vector_E <- paste0("Plot name: ",
+                          ind_E$waypoint.name,
+                          "<br>")
+ind_F <- subset(ind, location == "Fichte")
+legend.vector_F <- paste0("Plot name: ", 
+                          ind_F$waypoint.name,
+                          "<br>")
+ind_B <- subset(ind, location == "Buche")
+legend.vector_B <- paste0("Plot name: ",
+                          ind_B$waypoint.name,
+                          "<br>")
+```
+
+### **Einlesen aller aufgenommenen Individuen für Dichteberechnung**
+
+```{r}
+dens <- read.xlsx("E11_Data_sorted_1.xlsx",
+                  sheet = 5)
+dens$location <- as.factor(dens$location)
+dens$waypoint.name <- as.factor(dens$waypoint.name)
+dens$number.of.indvi <- as.numeric(dens$n.ind)
+str(dens)
+dens_NE <- subset(dens, location == "Nicht_entbuscht")
+dens_E <- subset(dens, location == "Entbuscht")
+dens_F <- subset(dens, location == "Fichte")
+dens_B <- subset(dens, location == "Buche")
+```
+
+### **Einlesen der Daten für Blüherfolg (flowering success)**
+
+```{r}
+flow.succ <- read.xlsx("E11_Data_sorted_1.xlsx",
+                       sheet = 4)
+str(flow.succ)
+flow.succ$location <- as.factor(flow.succ$location)
+flow.succ$waypoint.name <- as.factor(flow.succ$waypoint.name)
+flow.succ$number.of.indvi <- as.numeric(flow.succ$n.ind)
+flow.succ$number.flow.ind <- as.numeric(flow.succ$n.flow.ind)
+
+succ_NE <- subset(flow.succ, location == "Nicht_entbuscht")
+succ_E <- subset(flow.succ, location == "Entbuscht")
+succ_F <- subset(flow.succ, location == "Fichte")
+succ_B <- subset(flow.succ, location == "Buche")
+
+n.succ_NE <- droplevels(succ_NE)
+str(n.succ_NE)
+n.succ_E <- droplevels(succ_E)
+str(n.succ_E)
+n.succ_F <- droplevels(succ_F)
+str(n.succ_F)
+n.succ_B <- droplevels(succ_B)
+str(n.succ_B)
+
+sum.n.succ_NE <- sum(n.succ_NE$n.flow.ind, na.rm = T)
+sum.n.succ_E <- sum(n.succ_E$n.flow.ind, na.rm = T)
+sum.n.succ_F <- sum(n.succ_F$n.flow.ind, na.rm = T)
+sum.n.succ_B <- sum(n.succ_B$n.flow.ind, na.rm = T)
+sum.n.succ_NE
+sum.n.succ_E
+sum.n.succ_F
+sum.n.succ_B
+```
+
+## Flächengrößen berechnen
+
+```{r}
+area_NE <- st_as_sf(pt_NE) |>
+  st_bbox() |>
+  st_as_sfc() |>
+  st_area()
+
+area_E <- st_as_sf(pt_E) |>
+  st_bbox() |>
+  st_as_sfc() |>
+  st_area()
+
+area_F <- st_as_sf(pt_F) |>
+  st_bbox() |>
+  st_as_sfc() |>
+  st_area()
+
+area_B <- st_as_sf(pt_B) |>
+  st_bbox() |>
+  st_as_sfc() |>
+  st_area()
+
+area_NE
+area_E
+area_F
+area_B
+```
+
+## Dichteberechnung
+
+```{r}
+str(dens)
+str(dens_NE)
+n.dens_NE <- droplevels(dens_NE)
+str(n.dens_NE)
+n.dens_E <- droplevels(dens_E)
+str(n.dens_E)
+n.dens_F <- droplevels(dens_F)
+str(n.dens_F)
+n.dens_B <- droplevels(dens_B)
+str(n.dens_B)
+sum.n.dens_NE <- sum(n.dens_NE$n.ind, na.rm = T)
+sum.n.dens_E <- sum(n.dens_E$n.ind, na.rm = T)
+sum.n.dens_F <- sum(n.dens_F$n.ind, na.rm = T)
+sum.n.dens_B <- sum(n.dens_B$n.ind, na.rm = T)
+sum.n.dens_NE
+sum.n.dens_E
+sum.n.dens_F
+sum.n.dens_B
+
+density_NE <- sum.n.dens_NE/area_NE
+density_E <- sum.n.dens_E/area_E
+density_F <- sum.n.dens_F/area_F
+density_B <- sum.n.dens_B/area_B
+density_NE
+density_E
+density_F
+density_B
+```
+
+## Plot Dichte
+
+```{r}
+plot_NE <- merge(n.dens_NE, density_NE)
+colnames(plot_NE)[45] <- "density"
+plot_E <- merge(n.dens_E, density_E)
+colnames(plot_E)[45] <- "density"
+plot_F <- merge(n.dens_F, density_F)
+colnames(plot_F)[45] <- "density"
+plot_B <- merge(n.dens_B, density_B)
+colnames(plot_B)[45] <- "density"
+plot_all <- rbind(plot_NE,
+                  plot_E,
+                  plot_F,
+                  plot_B)
+
+
+# Sicherstellen, dass 'density' eine numerische Variable ist
+plot_all$density <- as.numeric(plot_all$density)
+plot_all$location <- factor(plot_all$location, levels = c("Nicht_entbuscht", "Entbuscht", "Buche", "Fichte"), labels = c("Ki.n.entb.", "Ki.entb.", "Buche", "Fichte"))
+
+# Erstelle den ggplot
+p <- ggplot(plot_all, aes(x = location, y = density*10, color = factor(location), fill = factor(location))) +
+  geom_bar(stat = "identity", position = "dodge", show.legend = FALSE, 
+           color = "black", size = 0.5) +  # stat = "identity" sorgt dafür, dass die tatsächlichen Werte genutzt werden
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 12),
+        axis.text.x = element_text(size = 10)) +  # Versetze X-Achsen-Beschriftungen leicht höhenversetzt
+  labs(x = "Fläche",
+       y = expression("Dichte [Anzahl Sprosse/10m"^2*"]"),
+       title = "Dichte aller Sprosse") +
+  scale_fill_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +  # Setze Farben für Fill
+  scale_color_manual(values = c("forestgreen", "gold", "firebrick", "darkblue"))  # Setze Farben für Color
+
+
+
+# Plot anzeigen
+print(p)
+
+# Speichern des Plots
+ggsave(filename = "bar_plot_density.png", plot = p, width = 7.4, height = 7.4, units = "cm")
+
+
+
+
+#Plot Dichte blühender Individuen
+#read data
+Dichte_bühend <- read.xlsx("Blühende_Dichte_Tabelle.xlsx")
+#change label names
+Dichte_bühend$location <- factor(Dichte_bühend$location, levels = c("Nicht_entbuscht", "Entbuscht", "Buche", "Fichte"), labels = c("Ki.n.entb.", "Ki.entb.", "Buche", "Fichte"))
+
+# Erstelle den ggplot
+plot_Dichte_blühend <- ggplot(Dichte_bühend, aes(x = location, y = Blühende_Dichte*10, color = factor(location), fill = factor(location))) +
+  geom_bar(stat = "identity", position = "dodge", show.legend = FALSE, 
+           color = "black", size = 0.5) +  # stat = "identity" sorgt dafür, dass die tatsächlichen Werte genutzt werden
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 12),
+        axis.text.x = element_text(size = 10)) +  # Versetze X-Achsen-Beschriftungen leicht höhenversetzt
+  labs(x = "Fläche",
+       y = expression("Dichte [Anzahl blühender Sprosse/10m"^2*"]"),
+       title = "Dichte blühender Sprosse") +
+  scale_fill_manual(values = c("forestgreen", "gold", "firebrick", "darkblue")) +  # Setze Farben für Fill
+  scale_color_manual(values = c("forestgreen", "gold", "firebrick", "darkblue"))  # Setze Farben für Color
+
+print(plot_Dichte_blühend)
+
+ggsave(filename = "bar_plot_density_flow.png", plot = plot_Dichte_blühend, width = 7.4, height = 7.4, units = "cm")
+```
+
+## Anzahl Individuen pro Horst (=Horstgröße)
+
+Da wir die Horstgröße (nach keinem festen Schema im Feld) selbst festgelegt haben, ist die Horstgröße eine Größe, die maßgeblich durch unsere Einteilung entstanden ist - auch wenn tendenziell größere Horste mit mehr Individuen am Hang und Wald waren als auf den restlichen Flächen. Daher sollten wir diese Größe evtl. nicht berücksichtigen bzw. uns unseres Einflusses bewusst sein.
+
+```{r}
+flow.succ$location <- factor(flow.succ$location, levels = c("Nicht_entbuscht", "Entbuscht", "Buche", "Fichte"), labels = c("Ki.n.entb.", "Ki. entb.", "Buche", "Fichte"))
+
+significance_labels <- data.frame(
+  location = c("Ki.n.entb.", "Ki. entb.", "Buche", "Fichte"),y_position = c(26, 26, 26, 26), label = c("a", "a", "b", "b"))
+
+# Sicherstellen, dass 'n.ind' eine numerische Variable ist
+flow.succ$n.ind <- as.numeric(flow.succ$n.ind)
+
+# Erstelle den ggplot
+a <- ggplot(flow.succ, aes(x = location, y = n.ind, color = factor(location), fill = factor(location))) +
+  geom_boxplot(position = "dodge", show.legend = FALSE, 
+               color = "black",  # Schwarze Ränder um die Boxplots
+               outlier.colour = "black",  # Schwarze Ausreißer
+               outlier.size = 2) +  # Größe der Ausreißer anpassen
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 15),
+        axis.text.x = element_text(size = 10, vjust = 0.5)) +  # Versetze X-Achsen-Beschriftungen leicht höhenversetzt
+  labs(x = "Fläche",
+       y = expression("Anzahl Sprosse pro Horst"),
+       title = "Horstgröße") +
+  scale_fill_manual(values = c("forestgreen", "gold","firebrick", "darkblue")) +  # Setze Farben für Fill
+  scale_color_manual(values = c("forestgreen", "gold","firebrick", "darkblue")) +  # Setze Farben für Color
+  # Hinzufügen der Signifikanzlabels
+  scale_y_continuous(breaks = seq(0, 25, by = 5), limits = c(0, 28)) +
+  geom_text(data = significance_labels, aes(x = location, y = pmax(y_position, 27), label = label), 
+            size = 3, color = "black", fontface = "plain", hjust = 0.5)
+
+# Plot anzeigen
+print(a)
+
+# Speichern des Plots
+ggsave(filename = "boxplot_density_with_significance.png", plot = a, width = 7.4, height = 7.4, units = "cm")
+
+# Plot anzeigen
+print(a)
+
+
+
+plot(flow.succ$n.ind ~ flow.succ$location,
+     col = c("firebrick", "gold", "darkblue",  "forestgreen"),
+     xlab = "Fläche",
+     ylab = "Anzahl Individuen")
+title("Horstgröße pro Fläche")
+text(x = 1.1, y = 20, labels = "ab")
+text(x = 2.1, y = 20, labels = "a")
+text(x = 3.1, y = 20, labels = "b")
+text(x = 4.1, y = 20, labels = "a")
+
+mean(flow.succ[1:20, 5]) #mean Nicht_entbuscht = 6.3
+mean(flow.succ[21:40, 5])#mean Entbuscht = 7.3
+mean(flow.succ[41:60, 5]) #mean Buche = 2.75
+mean(flow.succ[61:80, 5]) #mean Fichte = 2.15 [Individuen pro Horst]
+```
+
+## Blüherfolg
+
+```{r}
+
+flow.succ$success_ind <- (flow.succ$n.flow.ind/flow.succ$n.ind)*(100)
+plot(flow.succ$success_ind ~ flow.succ$location,
+     col = c("firebrick", "gold", "darkblue", "forestgreen"),
+     xlab = "Fläche",
+     ylab = "Anzahl blühender Individuen/Anzahl Individuen")
+title("Blüherfolg pro Fläche")
+text(x = 1, y = 90, labels = "a")
+text(x = 2, y = 90, labels = "b")
+text(x = 3, y = 90, labels = "ab")
+text(x = 4, y = 90, labels = "a")
+```
+
+## Absolute Anzahl blühender Sprosse je Fläche
+
+```{r}
+plot.succ_NE <- merge(n.succ_NE, sum.n.succ_NE)
+colnames(plot.succ_NE)[47] <- "flowering"
+plot.succ_E <- merge(n.succ_E, sum.n.succ_E)
+colnames(plot.succ_E)[47] <- "flowering"
+plot.succ_F <- merge(n.succ_F, sum.n.succ_F)
+colnames(plot.succ_F)[47] <- "flowering"
+plot.succ_B <- merge(n.succ_B, sum.n.succ_B)
+colnames(plot.succ_B)[47] <- "flowering"
+plot.succ_all <- rbind(plot.succ_NE,
+                  plot.succ_E,
+                  plot.succ_F,
+                  plot.succ_B)
+str(plot.succ_all)
+
+p <- ggplot(plot.succ_all, aes(x = location, y = flowering, color = factor(location), fill = factor(location))) +
+  geom_point(alpha = 11,
+             size =2) +
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 15)) +
+  labs(x = "Fläche",
+       y = expression ("Blühende Individuen gesamt"),
+       title = "Gesamtzahl der blühenden Individuen pro Fläche")
+p + scale_fill_manual(values = c("forestgreen", "gold", "darkblue", "firebrick"))
+p + scale_color_manual(values = c("forestgreen", "gold", "darkblue", "firebrick"))
+```
